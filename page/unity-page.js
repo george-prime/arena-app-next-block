@@ -545,7 +545,7 @@ const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobb
     window.ARENA_START_UNITY = () => {
       if (window.ARENA_LOADER_AT) return;
       window.ARENA_LOADER_AT = Date.now();
-      stage.textContent = 'Loading the program …';
+      window.ArenaText.say(stage, 'Loading the program …');   // the loading line, drawn by React like the page's own
       window.ARENA_PINNED_SCRIPT(window.ARENA_UNITY_LOADER)
         .then((u) => { script.src = u; document.body.appendChild(script); })
         .catch((e) => { console.error('[arena] ' + e.message); fail('The game\'s client is not the pinned one: ' + e.message); });
