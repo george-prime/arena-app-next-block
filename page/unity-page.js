@@ -6,11 +6,13 @@
 // that script, so its top-level names are the page's names exactly as before. While it loads it uses none of the main script's
 // own names (those it calls later - fail, show, canvas, config, boot, stage, ... - are the page's by then). The loader's file
 // name is the build's, which only the page's template is filled with: index.html hands it over as window.ARENA_UNITY_LOADER.
-// Its markup - the next round's box and the link's warning - is put where it stood; its CSS is unity-page.css beside this file.
-document.getElementById('arena-bal-split').insertAdjacentHTML('afterend', '<div id="arena-next" role="status"><span id="arena-next-say"></span><button id="arena-next-addons" type="button" style="display:none">Buy add-ons</button><button id="arena-next-donate" type="button">&hearts; Donate</button><button id="arena-next-exit" type="button">exit game</button></div>');
-document.getElementById('arena-lobby').insertAdjacentHTML('beforebegin', '<div id="arena-link-warn" role="alert" style="display:none;position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:9999;max-width:min(92vw,720px);padding:8px 14px;border-radius:8px;background:#b3261e;color:#fff;font:600 14px/1.35 system-ui,sans-serif;text-align:center;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.4)"></div>');
-document.getElementById('arena-fps-host').insertAdjacentHTML('beforebegin', '<select id="arena-gfx-select" aria-label="Graphics"><option value="auto" selected>Auto (by device)</option><option value="high">High</option><option value="low">Low</option></select><div class="muted" id="arena-gfx-now"></div>');   // Settings' graphics line
-document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<section class="settings-card" id="arena-set-bench"><h3>Benchmark</h3><label class="muted"><input type="checkbox" id="arena-bench-on"> On - off by default</label><div class="muted">Spectates the round and measures this device\'s frame rate with each graphics cost switched off in turn; the result shows under the FPS line. While it is on, a tap on the FPS line runs it too.</div><button id="arena-bench-go" type="button" disabled>Run the benchmark</button></section>');   // the benchmark's card
+// ITS PARTS ARE DRAWN BY REACT (kanban #564, Daniel 2026-10-21: "and also next block"): the next round's box, the link's warning, the
+// graphics choice, the benchmark card and lines, "securing your run" and the players line are view/NextBlockParts.jsx, built into
+// parts-page.js beside this file (the page loads it after its own React and before this); each is drawn into a host put where its markup
+// stood. This script keeps the bridge and the timing, and hands them view data. Their CSS is unity-page.css beside this file.
+const NB = window.ArenaNextBlock;
+const nbHost = (anchor, where) => { const h = document.createElement('div'); h.style.display = 'contents'; document.getElementById(anchor)[where](h); return h; };
+const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobby', 'before'), NB_GFX = nbHost('arena-fps-host', 'before'), NB_BENCH = nbHost('arena-set-logs', 'after');
 
     // ---------------------------------------------------------------- Unity graphics: the benchmark switch, quality by device, the frame-rate test
     // THE BENCHMARK SWITCH (2026-10-16: "Benchmark is disabled by default"): Settings turns it on, this browser keeps it
@@ -60,7 +62,7 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
         const ok = apply(current()[1]);
         window.ARENA_GFX_STATE = { device, mode, step, preset: current()[0], applied: ok, why };
         console.log('[gfx] ' + label() + ' (' + why + ')');
-        const said = document.getElementById('arena-gfx-now'); if (said) said.textContent = 'Now: ' + label();
+        drawGfx();
         return ok;
       }
       window.ARENA_GFX = { device, current, apply, applyCurrent, label };
@@ -92,12 +94,10 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
         });
       })();
       // THE SETTINGS LINE
-      const sel = document.getElementById('arena-gfx-select');
-      if (sel) {
-        sel.value = mode;
-        sel.addEventListener('change', () => { mode = sel.value; store.set('arena.gfx.mode', mode); applyCurrent('settings'); });
-        const said = document.getElementById('arena-gfx-now'); if (said) said.textContent = 'Now: ' + label();
+      function drawGfx() {
+        NB.draw(NB_GFX, 'gfx', { mode, now: 'Now: ' + label(), onChange: (m) => { mode = m; store.set('arena.gfx.mode', mode); applyCurrent('settings'); } });
       }
+      drawGfx();
     })();
     (function arenaBench() {
       const box = document.getElementById('arena-fps'), out = document.getElementById('arena-fps-bench');
@@ -132,7 +132,7 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
         const res = [], list = modes();
         try {
           for (const [name, m] of list) {
-            out.textContent = 'testing ' + name + ' (' + (res.length + 1) + '/' + list.length + ')…';
+            NB.draw(out, 'lines', { text: 'testing ' + name + ' (' + (res.length + 1) + '/' + list.length + ')…' });
             set(m); await sleep(1500);
             const r = await measure(3000);
             res.push({ name, ...r, buffer: m.dpr || name === 'as built' || name.startsWith('preset') ? buffer() : null });
@@ -141,7 +141,7 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
         // ONE LINE A MODE: avg / min / max fps, and the drawing buffer of each pixel mode
         const line = res.map((r) => r.name + ': avg ' + r.avg + ' · min ' + r.min + ' · max ' + r.max + (r.buffer ? ' · ' + r.buffer : '')).join('\n')
           + '\ntap to rerun';
-        out.textContent = line;
+        NB.draw(out, 'lines', { text: line });
         window.ARENA_BENCH = { res, dpr: baseDpr, deviceDpr: window.devicePixelRatio, ua: navigator.userAgent, at: new Date().toISOString() };
         console.log('[bench] ' + line);
       }
@@ -167,16 +167,17 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
     // THE BENCHMARK FROM SETTINGS: Settings closes, and Unity spectates and runs the page's frame-rate test (Benchmark,
     // as the lobby's button did); a game without Unity runs the test over its own client
     {
-      const on = document.getElementById('arena-bench-on'), go = document.getElementById('arena-bench-go');
-      on.checked = window.ARENA_BENCH_ON(); go.disabled = !on.checked;
-      on.addEventListener('change', () => { try { window.ARENA_BROWSER_STORE().setItem('arena.bench.on', on.checked ? '1' : '0'); } catch { /* this page only */ } go.disabled = !on.checked; });
+      const drawBench = () => NB.draw(NB_BENCH, 'bench', {
+        on: window.ARENA_BENCH_ON(),
+        onToggle: (on) => { try { window.ARENA_BROWSER_STORE().setItem('arena.bench.on', on ? '1' : '0'); } catch { /* this page only */ } drawBench(); },
+        onRun: () => {
+          if (!window.ARENA_BENCH_ON()) return;   // off by default
+          settingsPanel().style.display = 'none';
+          if (window.unityInstance && window.ARENA_UNITY !== false) { try { window.unityInstance.SendMessage('Bootstrap', 'Benchmark'); return; } catch { /* the test alone */ } }
+          if (typeof window.arenaBench === 'function') window.arenaBench();
+        } });
+      drawBench();
     }
-    document.getElementById('arena-bench-go').addEventListener('click', () => {
-      if (!window.ARENA_BENCH_ON()) return;   // off by default
-      settingsPanel().style.display = 'none';
-      if (window.unityInstance && window.ARENA_UNITY !== false) { try { window.unityInstance.SendMessage('Bootstrap', 'Benchmark'); return; } catch { /* the test alone */ } }
-      if (typeof window.arenaBench === 'function') window.arenaBench();
-    });
 
     // ---------------------------------------------------------------- the run's end: the round let go, the replay link, the result summary, the run made safe, the next round and its box
     // THE RUN IS OVER, SO THE PAGE LETS GO OF ITS ROUND (2026-09-15 16:14, hole 2). Measured
@@ -305,20 +306,20 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
       const n = M && (M.arenaRunNet || M.blwpRunNet || M.arenaNet || M.blwpNet);
       const finalTick = n && n.client && Number.isInteger(n.client.nextTick) ? n.client.nextTick : null;
       if (!finalTick || !run.roundHex || !run.entryHex) return null;
-      let el = document.getElementById('arena-securing');
-      if (!el) { el = document.createElement('div'); el.id = 'arena-securing';
-        el.style.cssText = 'position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;padding:8px 14px;border-radius:8px;background:rgba(10,14,20,.92);color:#ffd27a;font:600 14px system-ui;max-width:92vw;text-align:center';
-        document.body.appendChild(el); }
-      el.style.display = ''; el.textContent = 'Securing your run with the signer nodes … keep this tab open';
+      // "securing your run", drawn by React into its host - made at the first run
+      let host = document.getElementById('arena-securing-host');
+      if (!host) { host = document.createElement('div'); host.id = 'arena-securing-host'; document.body.appendChild(host); }
+      const said = (say, tone, hidden = false) => window.ArenaNextBlock.draw(host, 'securing', { say, tone, hidden });
+      said('Securing your run with the signer nodes … keep this tab open', 'wait');
       let got = null;
       for (let i = 0; i < tries; i++) {
         got = await ARENACLIENT.secureTranscript({ roundId: ARENACLIENT.fromHex(run.roundHex), entryId: ARENACLIENT.fromHex(run.entryHex), nodes: run.nodes || [], finalTick });
-        if (got.safe) { el.style.color = '#7ee08a'; el.textContent = 'Your run is safe: ' + got.holders.length + ' signer nodes hold all of it'; setTimeout(() => { el.style.display = 'none'; }, 4000); break; }
-        el.textContent = 'Securing your run: ' + got.holders.length + ' of 2 signer nodes hold all of it … keep this tab open';
+        if (got.safe) { const safe = 'Your run is safe: ' + got.holders.length + ' signer nodes hold all of it'; said(safe, 'safe'); setTimeout(() => said(safe, 'safe', true), 4000); break; }
+        said('Securing your run: ' + got.holders.length + ' of 2 signer nodes hold all of it … keep this tab open', 'wait');
         await new Promise((r) => setTimeout(r, everyMs));
       }
       window.ARENA_RUN_SAFE = got;
-      if (got && !got.safe) { el.style.color = '#ff8a7a'; el.textContent = 'Your run is not yet held by two signer nodes - keep this tab open (' + got.why + ')'; }
+      if (got && !got.safe) said('Your run is not yet held by two signer nodes - keep this tab open (' + got.why + ')', 'bad');
       return got;
     };
     window.ARENA_RUN_OVER = (word, run) => {
@@ -412,8 +413,23 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
     }
     // "joining next round in N seconds" BESIDE "exit game", after the result card and until the next start - the words
     // and the timing are ARENACLIENT.nextRoundView's
+    // THE BOX, drawn by React with what paintNext found and its three buttons (donate, add-ons, exit game); drawn again only when it changes
+    let nbNext = { show: false }, nbNextDrawn = '';
+    function nbDrawNext() {
+      const key = JSON.stringify(nbNext); if (key === nbNextDrawn) return; nbNextDrawn = key;
+      NB.draw(NB_NEXT, 'next', { ...nbNext,
+        onDonate: () => { if (window.ARENA_DONATE_OPEN) window.ARENA_DONATE_OPEN(window.ARENA_GAME_NAME || 'nextblock'); },
+        onAddons: () => { try { window.unityInstance.SendMessage('Bootstrap', 'OpenAddons'); } catch (e) { console.error('[arena] add-ons: ' + e.message); } },
+        onExit: () => {
+          // EXIT GAME: no next round. A join still being made, or held for its start, is dropped; a stake a paying round
+          // already locked refunds by the lock's own expiry (§23.1) - nothing new is sent. PLAY from the lobby continues again.
+          window.ARENA_CONTINUE = false;
+          cancelNextJoin('exited');
+          console.log('[arena] exit game: no next round');
+          nbNext = { ...nbNext, show: false }; nbDrawNext();
+        } });
+    }
     (function paintNext() {
-      const box = document.getElementById('arena-next');
       const n = window.ARENA_NEXT; const j = window.ARENA_JOIN;
       let v = { show: 'lobby' };
       const waiting = n && window.ARENA_CONTINUE !== false && (n.state === 'looking'
@@ -425,16 +441,10 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
         // AT ONCE, beside the ending Unity keeps up (COUNTDOWN-NOW-2209): no waiting for the card
       }
       if (n && n.state === 'joining' && Date.now() >= n.startMs) n.state = 'started';
-      if (box) {
-        box.style.display = v.show === 'countdown' ? 'flex' : 'none';
-        if (v.show === 'countdown') {
-          document.getElementById('arena-next-say').textContent = v.line;
-          document.getElementById('arena-next-exit').textContent = v.exit;
-          // AND BUY ADD-ONS while the countdown runs: Unity's add-ons panel, when this game sells something
-          const ad = document.getElementById('arena-next-addons');
-          if (ad) ad.style.display = window.ARENA_ADDONS_VIEW && window.ARENA_ADDONS_VIEW().shop && window.unityInstance ? '' : 'none';
-        }
-      }
+      // AND BUY ADD-ONS while the countdown runs: Unity's add-ons panel, when this game sells something
+      nbNext = v.show === 'countdown' ? { show: true, line: v.line, exit: v.exit, addons: !!(window.ARENA_ADDONS_VIEW && window.ARENA_ADDONS_VIEW().shop && window.unityInstance) }
+        : { ...nbNext, show: false };
+      nbDrawNext();
       window.ARENA_NEXT_VIEW = v;
       setTimeout(paintNext, 250);
     })();
@@ -471,18 +481,6 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
       }
       return show(offer);
     };
-    document.getElementById('arena-next-donate').addEventListener('click', () => { if (window.ARENA_DONATE_OPEN) window.ARENA_DONATE_OPEN(window.ARENA_GAME_NAME || 'nextblock'); });
-    document.getElementById('arena-next-addons').addEventListener('click', () => {
-      try { window.unityInstance.SendMessage('Bootstrap', 'OpenAddons'); } catch (e) { console.error('[arena] add-ons: ' + e.message); }
-    });
-    document.getElementById('arena-next-exit').addEventListener('click', () => {
-      // EXIT GAME: no next round. A join still being made, or held for its start, is dropped; a stake a paying round
-      // already locked refunds by the lock's own expiry (§23.1) - nothing new is sent. PLAY from the lobby continues again.
-      window.ARENA_CONTINUE = false;
-      cancelNextJoin('exited');
-      console.log('[arena] exit game: no next round');
-      document.getElementById('arena-next').style.display = 'none';
-    });
 
     // ---------------------------------------------------------------- the run's link to the signer nodes, said while it is driven
     // A RUN THAT DOES NOT REACH THE SIGNER NODES IS SAID WHILE IT IS DRIVEN (2026-10-02, playtest: his Firefox run
@@ -492,11 +490,9 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
     // state and last error); a run that ends with ticks never sent says how much of it counts. Each change is logged, so
     // the client logs carry it.
     const TICK_HZ = 60;
-    let linkSaid = '', linkLoggedAt = 0, linkEndedSaidFor = null, linkEndedUntil = 0, linkLive = null, linkLiveGoneAt = 0;
+    let linkSaid = '', linkLoggedAt = 0, linkEndedSaidFor = null, linkEndedUntil = 0, linkLive = null, linkLiveGoneAt = 0, linkEndedSay = '', linkDrawn = null;
     const mmss = (s) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
     function watchTheLink() {
-      const bar = document.getElementById('arena-link-warn');
-      if (!bar) return;
       const M = window.unityInstance && window.unityInstance.Module;
       const n = M && (M.arenaRunNet || M.blwpRunNet || M.arenaNet || M.blwpNet);
       const c = n && n.client;
@@ -523,20 +519,19 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
         if (unsentS > 1 && linkEndedSaidFor !== done) {
           const why = [done.state, done.refusedWhy || done.error].filter(Boolean).join(': ');
           linkEndedSaidFor = done; linkEndedUntil = Date.now() + 30000;
-          bar.dataset.ended = `The signer nodes got ${mmss(done.nextTick / TICK_HZ)} of your run; the last ${Math.round(unsentS)} s never reached them, so the run counts only up to there${why ? ' (' + why + ')' : ''}.`;
+          linkEndedSay = `The signer nodes got ${mmss(done.nextTick / TICK_HZ)} of your run; the last ${Math.round(unsentS)} s never reached them, so the run counts only up to there${why ? ' (' + why + ')' : ''}.`;
         }
       }
-      if (!say && Date.now() < linkEndedUntil) say = bar.dataset.ended || '';
+      if (!say && Date.now() < linkEndedUntil) say = linkEndedSay;
       // logged when it appears, when it changes kind, every 10 s while it stays, and when it clears - not every second
-      const kind = !say ? '' : say === bar.dataset.ended ? 'ended' : 'behind';
+      const kind = !say ? '' : say === linkEndedSay ? 'ended' : 'behind';
       if (kind !== linkSaid || (kind && Date.now() - linkLoggedAt > 10000)) {
         if (say) console.warn('[arena] ' + say); else if (linkSaid) console.log('[arena] the run reaches the signer nodes again');
         linkSaid = kind; linkLoggedAt = Date.now();
       }
-      bar.textContent = say;
-      bar.style.display = say ? '' : 'none';
+      if (say !== linkDrawn) { linkDrawn = say; NB.draw(NB_WARN, 'warn', { say }); }
     }
-    setInterval(watchTheLink, 1000);
+    watchTheLink(); setInterval(watchTheLink, 1000);
 
     // ---------------------------------------------------------------- Unity's loader: the download, the GPU's textures, the instance
     // the loader is the Arena's to check (kanban #569): fetched, hashed against the pin the page is built with, run from a blob
@@ -782,7 +777,7 @@ document.getElementById('arena-set-logs').insertAdjacentHTML('afterend', '<secti
       const who = (typeof ARENACLIENT !== 'undefined' && ARENACLIENT.playersLine)
         ? ARENACLIENT.playersLine({ joined, others, stalled, at, refused, joinRefused, stake, names: window.ARENA_OTHER_NAMES || [] })
         : (joined ? (others ? (1 + others) + ' players in this round' : '1 player · waiting') : 'round named · not joined');
-      el.textContent = ab + '\n' + playLine(net) + '\n' + who;
+      NB.draw(el, 'lines', { text: ab + '\n' + playLine(net) + '\n' + who });
     }
     // WHO THE OTHER PLAYERS ARE (M3.3-34): this tab hands the round's signer nodes its
     // name, signed with the round key it is joined under, and asks them for the
