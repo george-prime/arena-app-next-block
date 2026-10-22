@@ -103,10 +103,10 @@ export const TRUCK_ARMOUR = Math.imul(3, ONE) >> 1;   // 1.5, TruckHealth.armour
  * counterpart yet, because the core has no hulls. It is on the list with
  * `Army.Wrecks`.
  */
-// SUPERSEDED (Daniel 2026-09-16 17:06): the speed-priced crash above - 4 m/s a write-off, 0.5 m/s the floor, 6 points
+// SUPERSEDED (the owner 2026-09-16 17:06): the speed-priced crash above - 4 m/s a write-off, 0.5 m/s the floor, 6 points
 // per m/s - is gone. Any touch with live armour writes the truck off; see the armour contact in `step`.
 
-// THE WORLD GREW EAST (Daniel 2026-09-19 15:58, miner-entrance-still-covered-1558.jpg, ruled 16:0x). The drawn miner
+// THE WORLD GREW EAST (the owner 2026-09-19 15:58, miner-entrance-still-covered-1558.jpg, ruled 16:0x). The drawn miner
 // reaches 60.6 m west of its own origin, so at an origin of 114.4 m the building stood on the battlefield from x
 // 53.8 m - over the chart's last nine slots, the road and the army. Moving the chart could not fix that without a
 // 4.05 m pitch, which is narrower than the corridors the 10:05 playtest already called a trap. So the world grows:
@@ -241,8 +241,8 @@ function tape(seedHash) {
  * This was the host's door: Unity uploaded the relief it was drawing and the
  * core felt it. Letter 36 took it away - `init` generates the relief from the
  * round's seed, and a page that could overwrite it would put the player back
- * in a world nobody else can replay. `BlwpSetGround` is gone from the jslib
- * and `SetGround` from `BlwpCore`, so nothing in a browser can call this.
+ * in a world nobody else can replay. `ArenaSetGround` is gone from the jslib
+ * and `SetGround` from `ArenaCore`, so nothing in a browser can call this.
  *
  * It stays for the one caller that is not a host: the reference tests, which
  * reproduce a published dataset and need the exact field it was measured on.
@@ -310,7 +310,7 @@ export function teleport(st, x, z, heading) {
  * This was the host's door and `UploadSolids` pushed through it every time
  * Unity's collider count changed. `init` makes the map's own boxes now, so a
  * page that could replace them would put the player among walls nobody else
- * has. `BlwpSetSolids` is gone from the jslib and `SetSolids` from `BlwpCore`.
+ * has. `ArenaSetSolids` is gone from the jslib and `SetSolids` from `ArenaCore`.
  *
  * It stays for the callers that are not hosts - the tests that measure what a
  * box on the path costs - and a set put here is marked, because a restart must
@@ -330,7 +330,7 @@ export function setSolids(st, count, boxes) {
  * Starts a new round without throwing away the world the host uploaded.
  *
  * `outcome` latches: once a run leaves RUN_LIVE nothing brings it back, and
- * only `init` sets it live again. `BlwpCore.Init` runs once, in Start, and
+ * only `init` sets it live again. `ArenaCore.Init` runs once, in Start, and
  * `teleport` - the host command all three round endings go through, delivery,
  * write-off and missed block - moves the truck and clears its momentum and
  * touches neither `S_STATE` nor `T_HP`. So every round after the first was the
@@ -428,7 +428,7 @@ export function setSolids(st, count, boxes) {
  * small end, twenty at the large, which is the span (z) asks for.
  */
 /**
- * HOW LONG THE GROUND TAKES TO OPEN, in ticks (Daniel 2026-09-16).
+ * HOW LONG THE GROUND TAKES TO OPEN, in ticks (the owner 2026-09-16).
  *
  * The blast is the tick the liquidation is consumed; the bowl is 384 ticks after it, and the page
  * draws it on the tick the core says it exists. Measured before: the hole stood in the state on the
@@ -540,7 +540,7 @@ export function submitSample(st, price) {
   const p = price | 0;
   if (p <= 0) return false;
   const h = st.tape, s = st.i32, m = O_TACTICS + TAC_MARKET;
-  // THE FIRST LIVE PRICE CONTINUES THE CHART, IT DOES NOT SHOVE IT (Daniel 2026-09-17 16:42, from the cab: "at the start
+  // THE FIRST LIVE PRICE CONTINUES THE CHART, IT DOES NOT SHOVE IT (the owner 2026-09-17 16:42, from the cab: "at the start
   // of the round the candles move left, then freeze"). The seeded tape is the round's own shape around a made-up level
   // ($78,515 on the Daily) and the first live price ($76,737) landed far outside it: the rescale swung the whole chart
   // - the seam at x 0 moved 19.3 m sideways over the 300 ticks after the sample and stopped there. Every price the
@@ -591,7 +591,7 @@ export function groundCandles(st) {
 }
 
 /**
- * THE LIVE TAPE (Daniel 2026-09-17 16:44: "reload always shows the SAME world candles - not live. Seeded tape is fallback
+ * THE LIVE TAPE (the owner 2026-09-17 16:44: "reload always shows the SAME world candles - not live. Seeded tape is fallback
  * only"). The page hands the core the last SAMPLES live prices (5 s apart, oldest first) before any live sample has
  * arrived: the tape, the open and the scale become the market's, and the seeded tape stays only as the fallback when no
  * history could be fetched. Once per core, before the first sample; in the transcript like a sample (batch `tapes`).
@@ -744,7 +744,7 @@ function seamAtX(st, x) {
 
 export function surfaceAt(st, x, z) {
   // relief as the static chart band holds it (§4.15: pancake inside, cone outside) + the candles - craters.
-  // PASSABILITY (§4.15, Daniel 2026-09-17 14:40 "make it so trucks and tanks get through"): nothing added in the band stands
+  // PASSABILITY (§4.15, the owner 2026-09-17 14:40 "make it so trucks and tanks get through"): nothing added in the band stands
   // over 1 m or climbs over 25% but a crater's bowl, so the 2.4 m hull-down berms (e0f4ed7) are withdrawn - a berm across
   // the hold band was a wall to a truck crossing the front. The candle ribbon (1 m, 25%) is the only layer added.
   if (!st.candles) return sub(heightAtWorld(st.ground, x, z, RELIEF_HALF_X, HALF_Z), craterCut(st.i32, x, z));
@@ -802,7 +802,7 @@ export function init(seedWord, { runTicks = BLOCK_TICKS } = {}) {
   // because a draw here would shift every stream after it and draw order is
   // protocol; C# takes it from `Random.value` once at Awake.
   s[O_TRUCK + T_FLAGS] = (Math.imul(seedWord | 0, 2654435761) >>> 31) & 1;
-  // AN EMPTY BED UNTIL A LOAD IS DECLARED (Daniel 2026-10-04 08:54: C is how full the truck is, not always 0.7):
+  // AN EMPTY BED UNTIL A LOAD IS DECLARED (the owner 2026-10-04 08:54: C is how full the truck is, not always 0.7):
   // submitLoad writes the fill, from the room the load carries.
   s[O_TRUCK + T_CARGO] = 0;
   // Armour tactics from the seed, before any unit moves (rules/tactics.js).
@@ -870,7 +870,7 @@ export function init(seedWord, { runTicks = BLOCK_TICKS } = {}) {
     spawnUnit(s, rng, i);
     if (isArmour(i)) enterInLane(s, O_TACTICS, i);   // WAR_TACTICS.md: every tank enters in its team's lane
   }
-  // AN ARMY STARTS DEPLOYED (Daniel 2026-09-19, ruled): a rifleman is put ON his post when he spawns - the comment
+  // AN ARMY STARTS DEPLOYED (the owner 2026-09-19, ruled): a rifleman is put ON his post when he spawns - the comment
   // above says so - while a tank was given only its lane's x and kept the spawn's z at the back edge. That is a
   // spawn fault the C# recording happens to contain, not doctrine, and it is not copied: both sides spent the
   // opening walking in, covering nothing.
@@ -1381,7 +1381,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
     // The hole is ARMED here, at the impact, and dug `CRATER_DELAY` ticks later: the slot keeps the
     // place and the load, and its radius stays zero until then. `craterOf` runs at the dig, so the
     // load is the only thing that has to be carried.
-    // AND NOTHING IN THE BLAST WALKS AWAY (Daniel 2026-09-19 15:55: "nuke must kill EVERY tank in the blast. No
+    // AND NOTHING IN THE BLAST WALKS AWAY (the owner 2026-09-19 15:55: "nuke must kill EVERY tank in the blast. No
     // survivors in range"). Measured before this rule, over three seeds and nine strikes each: 8 of 8, 6 of 6 and
     // 9 of 9 living tanks inside 16 m of a strike survived it - the liquidation had no lethality at all, it only
     // dug. The blast is the hole it is about to dig: every living unit, armour or man, either side, inside the
@@ -1469,7 +1469,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
   // does not, because the core has no invulnerable radius - that is a listed
   // gap and not something to invent here.
   //
-  // A TANK IS NOT A WALL, IT IS THE END (Daniel 2026-09-16 17:06: "Touch truck-tank = truck dies"). The crash used
+  // A TANK IS NOT A WALL, IT IS THE END (the owner 2026-09-16 17:06: "Touch truck-tank = truck dies"). The crash used
   // to be priced by how hard the truck went in - nothing under 0.5 m/s, a write-off only from 4 m/s - so a truck
   // could lean on a tank and drive on: measured, 17 of 24 slow drive-ins touched a tank and 22 of 24 trucks lived.
   // Any contact with live armour in a live run now writes it off; the impact word still goes to the host for the
@@ -1503,7 +1503,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
   // to be carried at its real size. The rifle still adds exactly ONE until
   // its own half of (j) is done.
   let courierDmg = 0;
-  // NO FIRE BEFORE ROLL-OUT (WAR_TACTICS.md §1.2, Daniel 2026-09-16): no gun chooses the truck until its best x is
+  // NO FIRE BEFORE ROLL-OUT (WAR_TACTICS.md §1.2, the owner 2026-09-16): no gun chooses the truck until its best x is
   // APRON_RADIUS past its start. Latched through S_BESTX, which never goes back. Measured before, truck idle 60 s in
   // the bay over 8 seeds: 4/8 hit on HEAD's core, 7/8 hit and one wrecked once tanks fired on a truck with no enemy near.
   const rolledOut = sub(s[O_SCORE + S_BESTX], START_X) >= APRON_RADIUS;
@@ -1607,7 +1607,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
   // A tank still driving in from further back is not on the line: it neither waits for the budget nor uses it up.
   // Measured with it counted, a side's column blocked itself - no tank on its line, a budget of nought, and the
   // seam-metre samples covered by two hulls were 0.1% in the first ten seconds and 57% at the end of the minute.
-  // THE BUDGET GOES TO GROUND CHANGING HANDS FIRST (§0 row 11, Daniel 2026-09-16: "point the budgeted movers at actual
+  // THE BUDGET GOES TO GROUND CHANGING HANDS FIRST (§0 row 11, the owner 2026-09-16: "point the budgeted movers at actual
   // crossings and giving ground"): a tank posted across the seam or on a team giving ground, then the tanks furthest
   // from where they are going - a scoot, a leg swap - before a hull correcting a metre. `offPost` is that rank: how far
   // (|dx| + |dz|) a tank on the line stands from its hold at the start of the tick - the hull-down spot for an
@@ -1618,7 +1618,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
   // were a budget wait, 49854 of them more than 8 m out. A tank still on its old post waits there - that is its
   // overwatch - and a tank that has started goes on. A new move starts while the grants already running, the pushed
   // hulls and the tanks of its side still to step that rank above it are fewer than the budget.
-  // A COLUMN (RULED, Daniel 2026-09-16 21:20): a tank that has not yet stood on its post (within 1.5 m) since it spawned
+  // A COLUMN (RULED, the owner 2026-09-16 21:20): a tank that has not yet stood on its post (within 1.5 m) since it spawned
   // or respawned. Columns do not count against the half-line budget: they neither wait on it nor use it up. Bit 7 of the
   // tank's U_COOLDOWN word, cleared at spawn. Counted by distance alone (40 m of its post), the opening drive and every
   // respawn queued for the budget 40 m short of their posts: 7.1 points of living-pair tank-ticks (a274fbc).
@@ -1710,7 +1710,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
     }
     if (!u.armour) {
       const rt = rifleTeamOf(i);
-      // A FIRE TEAM TAKES ITS POST FROM ITS FIRST MAN'S SQUAD (WAR_TACTICS.md §9.2, Daniel 2026-09-16): the four stand
+      // A FIRE TEAM TAKES ITS POST FROM ITS FIRST MAN'S SQUAD (WAR_TACTICS.md §9.2, the owner 2026-09-16): the four stand
       // on one anchor. His squad is the one drawn at his spawn, kept in his U_TARGET - no draw moves.
       u.anchor = s[squadWord(u.side, s[unitBase(firstManOf(rt.side, rt.team)) + U_TARGET])];
       u.halted = halted[rt.side < 0 ? 0 : 1][rt.team];
@@ -1803,7 +1803,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
     // A PROBE'S VIEW OF THE TANK'S OWN STEP (§0 row 2 reads flips of the own step, outside separation, which ran before this
     // loop): written only when a probe set `st.trace`, never read by a rule, outside the state and its hash.
     if (st.trace && u.armour) { st.trace.dx[i >> 2] = sub(u.x, s[b + U_X]); st.trace.dz[i >> 2] = sub(u.z, s[b + U_Z]); }
-    // OVERWATCH (Daniel 2026-09-16 18:10): a tank that moved this tick is bounding, and does not fire in it.
+    // OVERWATCH (the owner 2026-09-16 18:10): a tank that moved this tick is bounding, and does not fire in it.
     const movedThisTick = u.armour && u.tacBounding
       && (abs(sub(u.x, s[b + U_X])) + abs(sub(u.z, s[b + U_Z]))) > 1310;
 
@@ -2181,7 +2181,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
     }
   }
 
-  // ---- THE MAP EDGE IS A CLAMP (ruling 4, Daniel 2026-09-22) --------------
+  // ---- THE MAP EDGE IS A CLAMP (ruling 4, the owner 2026-09-22) --------------
   //
   // "The map edge is a clamp, not a wall. The core owes no wall solids." `rules/map.js` used to put four
   // boxes at +-HALF_X / +-HALF_Z, 26 m tall and sunk 6 m, so that a truck arriving airborne could not
@@ -2254,7 +2254,7 @@ export function step(st, throttle, steer, brake, handbrake, practice) {
     // core's - and `setUnits` had no caller left anywhere in the project, so
     // the preference was a dead branch guarding a dead setter. Both are gone.
     const threat = mulFast(threatAt(view, UNITS, tx, tz), frontWeight(tz, seamZ));
-    // WEIGHTED BY THE HEAT, AS §18A.3 SAYS ("rate(t) = proximity(t) · (1 + heat(t))"; Daniel 2026-10-04, option 1 of the
+    // WEIGHTED BY THE HEAT, AS §18A.3 SAYS ("rate(t) = proximity(t) · (1 + heat(t))"; the owner 2026-10-04, option 1 of the
     // spec audit): this read S_CARGO, which was harmless while C sat at 0.7 and counted a full bed twice - once in E, once
     // as C - once C became the bed fill. The heat is the load's own (fee and BTC, submitLoad), 0 until a load is declared.
     s[O_SCORE + S_EXPOSURE] = accrue(
@@ -2291,7 +2291,7 @@ export const frontAt = (st, x) => seamAtX(st, x | 0);
  *
  * `setHeat` used to live here and it took the ANSWER: Unity worked the wanted
  * level out in floats, in `CargoBay.Heat`, and pushed the number through
- * `BlwpSetHeat`. Two faults in one door, and the second is letter 40.
+ * `ArenaSetHeat`. Two faults in one door, and the second is letter 40.
  *
  * The first is that the rule was in two places. `rules/cargo.js` has carried
  * `heat(feeSats, btcHundredths)` - the same rule in integers - since the port,
@@ -2314,7 +2314,7 @@ export const frontAt = (st, x) => seamAtX(st, x | 0);
  */
 export function submitLoad(st, feeSats, btcHundredths, roomUsed) {
   st.i32[O_SCORE + S_HEAT] = heatForLoad(feeSats | 0, btcHundredths | 0);
-  // THE CARGO FACTOR C IS THE BED FILL (Daniel 2026-10-04 08:54): room used over the bed, 0 empty .. ONE full - the room
+  // THE CARGO FACTOR C IS THE BED FILL (the owner 2026-10-04 08:54): room used over the bed, 0 empty .. ONE full - the room
   // is the sum of cargo.js roomFor over what went on the bed, and it crosses in the load, so a replay sets the same C.
   // Not the heat, and not tied to S_HEAT. A load that carries no room (one stored before the room crossed) keeps the
   // 0.7 of a bed every run had until now, so a stored run does not move.

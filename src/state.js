@@ -19,7 +19,7 @@ export const MAX_UNITS = 256;
  * How many slots the simulation actually fields, and which of them are armour.
  *
  * Both lived in `sim.js` - `UNITS` exported, `ARMOUR_MASK` private - and so
- * neither reached `BlwpLayout.cs`, which is generated from THIS file. A
+ * neither reached `ArenaLayout.cs`, which is generated from THIS file. A
  * renderer reading core units would have had to walk all 256 slots and
  * hand-copy `(i & 3) === 0` into C#, which is exactly the drift the generator
  * exists to prevent: two descriptions of one buffer, and nothing throws when
@@ -216,7 +216,7 @@ export const K_STATE = 0, K_X = 1, K_Z = 2, K_LOAD = 3, K_SERIAL = 4;
 export const O_CRATERS = O_STRIKE + STRIKE_WORDS;
 export const MAX_CRATERS = 8;
 /**
- * ARMED, THEN DUG (Daniel 2026-09-16): the blast is on the tick the liquidation is consumed and the
+ * ARMED, THEN DUG (the owner 2026-09-16): the blast is on the tick the liquidation is consumed and the
  * hole opens 384 ticks later, so every slot carries its own dig tick and the load it was armed with.
  * Until then its radius is zero, which is what every reader already tests - the terrain, the army's
  * push-out and the page see no bowl at all. Per slot rather than one pending hole: a second
@@ -228,7 +228,7 @@ export const C_X = 0, C_Z = 1, C_R = 2, C_D = 3, C_ROUNDS = 4, C_DIG = 5, C_LOAD
 export const craterBase = (i) => O_CRATERS + Math.imul(i, C_WORDS);
 
 /**
- * ARMOUR TACTICS (TANK_TACTICS.md, Daniel 2026-09-16 18:20): the round seed's hash and, per team, its frontage slot,
+ * ARMOUR TACTICS (TANK_TACTICS.md, the owner 2026-09-16 18:20): the round seed's hash and, per team, its frontage slot,
  * last scoot, and role clock - rules/tactics.js reads and writes them. Appended, so no offset above moves.
  */
 export const O_TACTICS = O_CRATERS + Math.imul(MAX_CRATERS, C_WORDS);

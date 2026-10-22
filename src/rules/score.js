@@ -11,7 +11,7 @@ import { ONE, add, sub, mulFast, mulRound, mulDivRound, toIntRound, div, divRoun
 
 /** Metres of ground made good at full danger for E = 1. */
 // WHAT A FULL RUN OF RISK IS WORTH, and it was set too low to tell two runs
-// apart. Daniel drove the seam and drove the edges and both paid about a
+// apart. the owner drove the seam and drove the edges and both paid about a
 // thousand.
 //
 // Exposure accrues as `threat * (1 + cargo) * forward metres`, and a run gains
@@ -28,7 +28,7 @@ export const EXPOSURE_REFERENCE = Math.imul(320, ONE);
 /**
  * PAR TIME, IN TICKS, AND THE TICKS ARE THE RULE.
  *
- * Daniel 2026-10-04 09:17: T starts to sink at 20 seconds. The ceiling stays
+ * The owner 2026-10-04 09:17: T starts to sink at 20 seconds. The ceiling stays
  * 1.5 and the floor stays 0.25. 20 s is 1200 ticks (1200 x 1092/65536 =
  * 19.995 s). T leaves 1.5 there, is 1 at 1800 ticks (30 s), and reaches 0.25
  * at 7200 ticks (120 s). The old par was 3900 ticks, about 65 s.
@@ -42,13 +42,13 @@ export const APRON_RADIUS = Math.imul(22, ONE);
 
 /** Metres off the seam at which a metre of ground pays nothing.
  *  36, not 40: a 10% tighter band so a lane that skirts the front pays nothing
- *  sooner (Daniel 2026-09-23). */
+ *  sooner (the owner 2026-09-23). */
 export const FRONT_SCORE_SPAN = Math.imul(36, ONE);
 
 /**
  * How much of the local threat counts for the score, from distance to the
  * front. 1 on the seam, 0 at 36 m and beyond. Quadratic so a rim far from
- * the fighting is not a slightly quieter lane (Daniel 2026-09-07).
+ * the fighting is not a slightly quieter lane (the owner 2026-09-07).
  */
 export const frontWeight = (z, seam) => {
   const sep = abs(sub(z, seam));
@@ -93,7 +93,7 @@ export const timeFactor = (ticks) =>
                      T_FLOOR, T_CEIL);
 
 /**
- * THE FACTORS ON THE GRID THE CARD PRINTS, AND THE SCORE THEIR PRODUCT (Daniel 2026-09-25: "Their product is the score,
+ * THE FACTORS ON THE GRID THE CARD PRINTS, AND THE SCORE THEIR PRODUCT (the owner 2026-09-25: "Their product is the score,
  * so the core's score is that product"; multiplayer_p2p.md §18A.3: score = 1000 · E · T · C).
  *
  * Each factor is an integer count of 1e-5 (FACTOR_SCALE), formed from the core's own word and rounded once, half up:

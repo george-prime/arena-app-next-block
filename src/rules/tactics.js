@@ -1,4 +1,4 @@
-// ARMOUR TACTICS - WAR_TACTICS.md at the repo root is the spec (Daniel 2026-09-16 18:20). This file is its
+// ARMOUR TACTICS - WAR_TACTICS.md at the repo root is the spec (the owner 2026-09-16 18:20). This file is its
 // implementation; the army step (rules/army.js) only moves a tank to what is handed out here.
 //
 // Deterministic: every value is an integer function of the round seed word, the tank's roster slot index, the tick
@@ -282,7 +282,7 @@ export const assaultPhase = (s, base, side) => (s[assaultWord(base, side)] >> 4)
 export const assaultCount = (s, base, side) => s[assaultWord(base, side)] >>> 8;
 
 // =====================================================================================================================
-// THE CHART FIGHTS THE WAR (WAR_TACTICS.md §4.14, Daniel 2026-09-16 21:30/21:40). Two readings of the tape, re-read on the
+// THE CHART FIGHTS THE WAR (WAR_TACTICS.md §4.14, the owner 2026-09-16 21:30/21:40). Two readings of the tape, re-read on the
 // sample tick and never between: the LEAD (newest against the round's open: who is winning the round, supply) and the
 // TREND (the colour of the last six finished 10 s candles: who is attacking right now). Chart -> war only: nothing here
 // reads the truck, and nothing in the war writes the tape.
@@ -318,7 +318,7 @@ export function initMarket(s, base, tape) {
 /**
  * A finished candle's colour (§4.14): +1 green, -1 red, 0 a doji.
  *
- * THE DOJI BAND IS 0.3 bp, NOT 3 (measured 2026-09-19 from Daniel's 12:55 shot). §4.14 writes both numbers and they
+ * THE DOJI BAND IS 0.3 bp, NOT 3 (measured 2026-09-19 from the owner's 12:55 shot). §4.14 writes both numbers and they
  * are not the same one: *"a candle whose body is under 3 bp of the open (a doji, $2.25 at $75,000)"* - but 3 bp of
  * $75,000 is $22.50, and $2.25 is 0.3 bp. The worked example is the intent; the prose slipped a decimal and the core
  * had copied the prose.
@@ -339,7 +339,7 @@ export function candleColour(open, close) {
  * THE COLOUR OF THE `c`th FINISHED CANDLE BACK, `c` = 0 the newest, counted from the tape index `end` that the newest
  * finished candle closes on (`trendEnd` below).
  *
- * IT IS THE BODY THE PLAYER SEES, and until 2026-09-19 21:39 it was half of it (Daniel,
+ * IT IS THE BODY THE PLAYER SEES, and until 2026-09-19 21:39 it was half of it (the owner,
  * hud-sideways-five-red-2139.png: "SIDEWAYS is wrong - last five candles are RED"). A candle is TWO samples: §4.15's
  * staircase opens each one on the previous candle's close (chart.js: `o = sample[a - 1]`, `c = sample[a + 1]`), and
  * the world's bodies are built the same way (candles.js `candleLayout`). This read `tape[end - 2c - 1]` as the open -
@@ -516,7 +516,7 @@ export function isBounding(s, base, index, tick) {
 }
 
 /**
- * NO TANK ON A LOADING DOCK (Daniel 2026-09-19 13:09, playtest: "tanks must not drive on the Post Office loading
+ * NO TANK ON A LOADING DOCK (the owner 2026-09-19 13:09, playtest: "tanks must not drive on the Post Office loading
  * dock"). The post office stands at x -114.4 m and its paving reaches 31 m out, to -83.4 m; the outer slot is at
  * -81 m and the pair's outer tank sits 6 m beyond it, at -87 m, which is 3.6 m of concrete. The slot pitch does not
  * move - it is 27 m, pinned by the 46 m gun and the kill-zone row - and neither does the free slot or the pair's
@@ -540,7 +540,7 @@ const PAIR_EAST_X = (Math.min(5767168, MINER_DOOR_X - Math.imul(4, ONE)) - PAIR_
 /* ------------------------------------------------------------------ §11.3 COVER: wrecks and craters ---------- */
 
 /**
- * COVER IS A PLACE, AND A PLACE IS A FUNCTION OF THE STATE (WAR_TACTICS.md §11.3, Daniel 2026-09-16 19:02:
+ * COVER IS A PLACE, AND A PLACE IS A FUNCTION OF THE STATE (WAR_TACTICS.md §11.3, the owner 2026-09-16 19:02:
  * "they must not stay cannon fodder. They take cover, go prone, suppress, use wrecks and craters. Real infantry
  * hides."). Nothing here is ported: the old army has no cover at all, and its one artefact in this ground -
  * `AvoidWrecks`, which pushes a man OUT of a crater - is the inverse of this rule and stays where it belongs, on
@@ -698,7 +698,7 @@ export function coverEligible(s, base, side, postX, postZ, seamZ, place, held = 
     if (abs(dx) > reach || abs(dz) > reach) return false;
     if (length2(dx, dz) > reach) return false;
   }
-  // THE CLAMP PICKS A HOLE; IT DOES NOT TAKE ONE BACK (Daniel 2026-09-19, on the measurement below). The clamp
+  // THE CLAMP PICKS A HOLE; IT DOES NOT TAKE ONE BACK (the owner 2026-09-19, on the measurement below). The clamp
   // `[seam - side x 40, seam + side x 8]` says which places a man may be SENT to. Applied again every tick to a
   // claim he already holds, it takes the hole away from under him while he is still walking to it - and it does so
   // by a hair. Measured on the §11.3 drive, two seeds: 106 clamp deaths, 105 of them breaking the FRONT bound, by
@@ -855,7 +855,7 @@ export function onPost(s, base, index, tick, seamAt, ground) {
   const p = postOf(s, base, index, tick), side = teamOf(index).side;
   const line = add(seamAt(p.x) | 0, mulFast(Math.imul(side, ONE), p.depth));
   const held = p.bounding ? line : crestHold(s, base, index, p, line, side, ground);
-  // THE SAME POINT THE STEP AIMS AT: a post inside a crater is on its rim (army.js clearOfCraters, Daniel 15:57).
+  // THE SAME POINT THE STEP AIMS AT: a post inside a crater is on its rim (army.js clearOfCraters, the owner 15:57).
   // Read here too, or a tank standing correctly on a rim would be measured as off post and its team would stop
   // swapping roles and scooting.
   const clear = clearOfCraters(cratersOf(s), p.x, held, side);

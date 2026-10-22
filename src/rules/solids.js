@@ -146,7 +146,7 @@ export function resolveSolids(v, s, fx, fz, floor) {
 export const ARMOUR_RADIUS = 196608;
 
 /**
- * THE HULL IS A HULL (§1.2, RULED 2026-09-19 from Daniel's 12:58 playtest shots).
+ * THE HULL IS A HULL (§1.2, RULED 2026-09-19 from the owner's 12:58 playtest shots).
  *
  * The circle above was a compromise and the comment beside it says so - "a slightly generous circle around a 7 m
  * hull would have the truck bouncing off thin air beside it". Measured from the shots and the renderer: the drawn

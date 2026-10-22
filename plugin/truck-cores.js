@@ -175,11 +175,60 @@ export function nextblockRoundWarnings(c) {
   return out;
 }
 
-/** Every core nextblock's rounds are replayed by, by hash: the truck and the four kept installed beside it. */
-export const NEXTBLOCK_CORES = new Map([[TRUCK.hash, TRUCK], [TRUCK_7E21_HASH, TRUCK_7E21], [DE2F_HASH, TRUCK_DE2F],
+/**
+ * 68e2b3d6, THE TRUCK VERSIONS 1-4 NAME, KEPT INSTALLED (kanban #523): the truck's source until its comments were cleaned of
+ * names, ticket numbers and blwp, which made the truck in src/ another core (a5c5766a below). Its files are frozen in
+ * frozen/68e2b3d6 and its hash computed from them; its bundles are the truck's as they were (dist/blwp-core.js, the replay
+ * bundle dist/blwp-replay-core.js), so every round versions 1-4 published plays and replays exactly as before.
+ */
+export const TRUCK_68E2_HASH = '68e2b3d6757dc26a76f95eaf0b57799f4e965267ae70a2e79ce4228154acb589';
+const FROZEN_68E2 = fileURLToPath(new URL('../frozen/68e2b3d6', import.meta.url));
+if (coreHashHex(FROZEN_68E2) !== TRUCK_68E2_HASH) throw new Error(`core/frozen/68e2b3d6 hashes to ${coreHashHex(FROZEN_68E2)}, not the core it keeps`);
+export const TRUCK_68E2 = withAdapter({
+  name: `${TRUCK_NAME} (68e2b3d6)`,
+  hash: TRUCK_68E2_HASH,
+  url: new URL('../frozen/68e2b3d6/adapter.js', import.meta.url).href,
+  root: new URL('../frozen/68e2b3d6/', import.meta.url).href,
+  configs: new Map([[TRUCK_CURRENT_CONFIG, CURRENT_CONFIG], [TRUCK_V3_CONFIG, {}]]),
+  replayFile: new URL('../dist/blwp-replay-core.js', import.meta.url),
+}, '../frozen/68e2b3d6/adapter.js');
+
+/**
+ * THE TWO CORES VERSION 5 NAMES (kanban #523): 68e2b3d6 and f0cc7b7b with their comments cleaned of names, ticket numbers
+ * and blwp - the same code, file for file (tools/ast-same.mjs), so the same game: a5c5766a the truck, 0847c99f the truck that
+ * knows the larger truck. Frozen like the cores before them, their hashes computed from their files; each with its own
+ * browser bundle and replay bundle (dist/core-<hash>.js, dist/replay-core-<hash>.js), whose global is NEXTBLOCK_CORE.
+ */
+export const TRUCK_A5C5_HASH = 'a5c5766a7902b6703ebe9382cea9154adc777af3e5cafa766265e971efa52c5a';
+const FROZEN_A5C5 = fileURLToPath(new URL('../frozen/a5c5766a', import.meta.url));
+if (coreHashHex(FROZEN_A5C5) !== TRUCK_A5C5_HASH) throw new Error(`core/frozen/a5c5766a hashes to ${coreHashHex(FROZEN_A5C5)}, not the core it keeps`);
+export const TRUCK_A5C5 = withAdapter({
+  name: `${TRUCK_NAME} (a5c5766a)`,
+  hash: TRUCK_A5C5_HASH,
+  url: new URL('../frozen/a5c5766a/adapter.js', import.meta.url).href,
+  root: new URL('../frozen/a5c5766a/', import.meta.url).href,
+  configs: new Map([[TRUCK_CURRENT_CONFIG, CURRENT_CONFIG], [TRUCK_V3_CONFIG, {}]]),
+  replayFile: new URL('../dist/replay-core-a5c5766a.js', import.meta.url),
+}, '../frozen/a5c5766a/adapter.js');
+export const TRUCK_0847_HASH = '0847c99f60e694e106fce0a79ac252b3e6170a343db52a95e3b5052a7e00a5f1';
+const FROZEN_0847 = fileURLToPath(new URL('../frozen/0847c99f', import.meta.url));
+if (coreHashHex(FROZEN_0847) !== TRUCK_0847_HASH) throw new Error(`core/frozen/0847c99f hashes to ${coreHashHex(FROZEN_0847)}, not the core it keeps`);
+export const TRUCK_0847 = withAdapter({
+  name: `${TRUCK_NAME} (0847c99f, the larger truck)`,
+  hash: TRUCK_0847_HASH,
+  url: new URL('../frozen/0847c99f/adapter.js', import.meta.url).href,
+  root: new URL('../frozen/0847c99f/', import.meta.url).href,
+  configs: new Map([[TRUCK_CURRENT_CONFIG, CURRENT_CONFIG], [TRUCK_V3_CONFIG, {}]]),
+  replayFile: new URL('../dist/replay-core-0847c99f.js', import.meta.url),
+}, '../frozen/0847c99f/adapter.js');
+
+/** Every core nextblock's rounds are replayed by, by hash: 68e2b3d6 (the truck versions 1-4 name) and the four kept installed beside it. */
+export const NEXTBLOCK_CORES = new Map([[TRUCK_68E2_HASH, TRUCK_68E2], [TRUCK_7E21_HASH, TRUCK_7E21], [DE2F_HASH, TRUCK_DE2F],
   [TRUCK_2069_HASH, TRUCK_2069], [TRUCK_BEFORE_FORK_HASH, TRUCK_BEFORE_FORK]]);
 /** THE CORES MANIFEST VERSION 3 NAMES (kanban #369): every one above, and the truck that knows the larger truck. */
 export const NEXTBLOCK_CORES_V3 = new Map([...NEXTBLOCK_CORES, [TRUCK_F0CC_HASH, TRUCK_F0CC]]);
+/** THE CORES MANIFEST VERSION 5 NAMES (kanban #523): only the two cleaned ones - a version-5 round plays on one of them. */
+export const NEXTBLOCK_CORES_V5 = new Map([[TRUCK_A5C5_HASH, TRUCK_A5C5], [TRUCK_0847_HASH, TRUCK_0847]]);
 
 /**
  * NEXTBLOCK'S MANIFEST BODY, from this registration (§0A.3): every core above with the configs it plays, a run of at

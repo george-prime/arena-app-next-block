@@ -9,7 +9,7 @@ import { ONE, add, sub, mulFast, div, divRound, clamp, min, max } from '../fixed
 export const SAMPLES = 64;
 
 /**
- * The seam's reach either side of z = 0 as a share of the half depth, Q16.16: 0.53, +-45 m (WAR_TACTICS.md §4.15, Daniel
+ * The seam's reach either side of z = 0 as a share of the half depth, Q16.16: 0.53, +-45 m (WAR_TACTICS.md §4.15, the owner
  * 2026-09-17 09:40: a smaller static chart, so the relief outside the band stands behind the lines). It was 0.72 (C#'s
  * +-61.2 m, see `frontlineZ`); 0.53 x 65536 = 34734.08.
  */
@@ -20,7 +20,7 @@ export const FRONT_DEPTH = 34734;
  * +-130 m map, so the fight line's price at an x is read from the samples of the candle standing at that x. 32 slots of
  * FIELD_SLOT from FIELD_X0 (spawn ruling B: first face 26 m past the spawn centre, last slot ending before the miner face);
  *
- * RULING B REFITTED TO THE MEASURED DOOR (Daniel 2026-09-19 13:09 and his pick after the measurement). The "miner face"
+ * RULING B REFITTED TO THE MEASURED DOOR (the owner 2026-09-19 13:09 and his pick after the measurement). The "miner face"
  * the ruling named is x 108.4, which is where the MODEL'S ORIGIN is placed - not where the building begins. Measured
  * out of bitcoin_miner_megastructure.glb, through DeliveryGate's 180-degree turn and (1, 0.45, 1) scale, the miner
  * stands on the ground from x 53.8 m (power cables), with feet at 62.8, legs at 66.9 and its lower mass from 64.4;
@@ -38,7 +38,7 @@ export const FIELD_SLOT = 339558;                  // 5.18124 m; 32 slots end at
 const TAPE_HALF = 32768, TAPE_LAST_Q = Math.imul(SAMPLES - 1, ONE);
 
 /**
- * THE SCROLL (§4.15 movement, Daniel 2026-09-17 13:49), in samples, Q16.16: how far the chart has slid toward the post
+ * THE SCROLL (§4.15 movement, the owner 2026-09-17 13:49), in samples, Q16.16: how far the chart has slid toward the post
  * office since its slots last lined up. One sample is half a slot (2.878 m at the spawn-B pitch) over the 300 ticks a
  * sample lasts, 0.576 m/s; held at a whole sample when the next one is late. The pairing moves a candle one whole slot
  * every second sample, so the slide runs 0..2 samples between those moves - `(1 - taken & 1)` whole samples plus the

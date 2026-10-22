@@ -36,7 +36,7 @@ export const HALF_MOUTH = Math.imul(34, ONE);
 export const BLOCK_TICKS = 10800;
 
 /**
- * THE RUN LENGTH IS THE ROUND'S (Daniel 2026-10-01, the 82/90 hard fork: "The round length must be part of the contract
+ * THE RUN LENGTH IS THE ROUND'S (the owner 2026-10-01, the 82/90 hard fork: "The round length must be part of the contract
  * - not a fixed constant. It must be part of the round announcement"). A run ends MISSED after the ticks its round's
  * contract names (blockTicks), handed to `init`; BLOCK_TICKS stays the default a run without a round gets (practice, a
  * SIM round) and the longest a round may name. A run of BLOCK_TICKS is the same, tick for tick and hash for hash, as the
