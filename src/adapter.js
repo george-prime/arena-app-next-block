@@ -1,4 +1,4 @@
-// THE TRUCK GAME, AS A CORE A SEAT REPLAYS (M3; Daniel 2026-09-15 08:03 and 08:07).
+// THE TRUCK GAME, AS A CORE A SEAT REPLAYS (M3; the owner 2026-09-15 08:03 and 08:07).
 //
 // The seats are a network the truck game runs on, not the game. They replay the core a round names
 // - its sim_wasm_hash - and read no truck, cargo or map themselves: this is the one face the truck
@@ -27,7 +27,7 @@ export const CORE = Object.freeze({
    */
   eventsOf(transcript) {
     const due = new Map((transcript.liquidations || []).map(([at, size]) => [at, size]));
-    // a load is [at, fee, btc] or, since the bed fill crossed (Daniel 2026-10-04 08:54), [at, fee, btc, room]
+    // a load is [at, fee, btc] or, since the bed fill crossed (the owner 2026-10-04 08:54), [at, fee, btc, room]
     const loaded = new Map((transcript.loads || []).map(([at, ...rest]) => [at, rest]));
     // the live price, one sample at a tick (the page submits at most one per 300 ticks)
     const priced = new Map((transcript.samples || []).map(([at, price]) => [at, price]));

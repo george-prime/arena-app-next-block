@@ -114,7 +114,7 @@ export function chartView(st, range, out) {
   out[CH_LEAD_BP] = bp > 0 ? idiv((last - open) | 0, bp) : 0;
   // The six candles the trend is read from (§4.14), newest in bits 0-1: 1 green, 2 red, 0 doji.
   // THE SAME FUNCTION THE TREND USES (tactics.js `trendCandle`), not a second copy of the indexing: this held its own
-  // copy, and when the copy graded half a body so did the dots - which is why Daniel's 21:39 shot had six dots that
+  // copy, and when the copy graded half a body so did the dots - which is why the owner's 21:39 shot had six dots that
   // disagreed with the five red candles drawn above them on the same HUD.
   let dots = 0;
   const end = trendEnd(st.tape, count);

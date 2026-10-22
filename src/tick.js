@@ -27,7 +27,7 @@
 // ticks. A protocol that wrote "60" would be a second clock disagreeing with
 // the first.
 //
-// The only other place sixty is written down is a comment in `BlwpNet.cs`,
+// The only other place sixty is written down is a comment in `ArenaNet.cs`,
 // which is exactly the leftover number not to copy into a money path.
 import { ONE } from './fixed.js';
 

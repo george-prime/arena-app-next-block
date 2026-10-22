@@ -45,7 +45,7 @@ export const MINER_X = 11075584;         // 169 m, the miner's own origin (was 1
  * WHERE THE MINER ACTUALLY BEGINS - the west edge of the DRAWN building, not its origin and not its tunnel.
  *
  * The first cut of this (2026-09-19 13:09) put the door at the tunnel's mouth, 90.4 m, because that is where the
- * entry corridor clears. Daniel's 15:58 shot showed why that was the wrong edge: the building's legs, feet, cables
+ * entry corridor clears. the owner's 15:58 shot showed why that was the wrong edge: the building's legs, feet, cables
  * and lower mass stand on the ground from 60.6 m west of its origin, so road, chart and tanks were still under it.
  * The door is that edge. With the origin at 169 m it is 108.4 m, and nothing the world lays down goes past it: the
  * candle field ends at 90.0 m, the road ribbon ends here, and the army's own east clamp is held short of it.
@@ -91,7 +91,7 @@ export function mapSolids(ground, halfX, halfZ, reliefHalfX = halfX) {
 
   // ---- THE FOUR EDGES OF THE WORLD ARE NOT SOLIDS ------------------------
   //
-  // RULED (Daniel 2026-09-22, ruling 4 of `ef7af68c`, re-stated knowing these existed): the map edge is
+  // RULED (the owner 2026-09-22, ruling 4 of `ef7af68c`, re-stated knowing these existed): the map edge is
   // a CLAMP, not a wall. The core owes no wall solids, and the client stops drawing walls the core does
   // not build.
   //
@@ -127,7 +127,7 @@ export function mapSolids(ground, halfX, halfZ, reliefHalfX = halfX) {
   // Over every mouth.
   put(shellX, 0, half(WALL_DEPTH), SHELL_HALF, add(postG, MOUTH_HIGH), postHigh);
 
-  // AND ACROSS EVERY MOUTH, WHICH WAS A HOLE RIGHT THROUGH THE BUILDING (Daniel 2026-09-20 18:59,
+  // AND ACROSS EVERY MOUTH, WHICH WAS A HOLE RIGHT THROUGH THE BUILDING (the owner 2026-09-20 18:59,
   // photographed: "the truck must not drive through that building ... Mempool collision must be exactly the
   // yellow marked line on the facade").
   //
@@ -184,7 +184,7 @@ export function mapSolids(ground, halfX, halfZ, reliefHalfX = halfX) {
   // written here in the units the core keeps. They are NOT a mesh collider and nothing was copied from the C#:
   // DeliveryGate's five Slab() calls still build the five above, and that agreement is left exactly as it was.
   //
-  // WHAT IS DELIBERATELY ABSENT, and it is a ruling rather than an oversight (Daniel 2026-09-20):
+  // WHAT IS DELIBERATELY ABSENT, and it is a ruling rather than an oversight (the owner 2026-09-20):
   //   mass_behind_tunnel         hangs from y 2.7 m across the whole approach while the truck's body is 3.26 m,
   //                              so its roof passes 0.56 m through it. The delivery gate is at x 169, PAST that
   //                              mass at x 119..145, so a solid there closes the only route to the miner. The
@@ -195,7 +195,7 @@ export function mapSolids(ground, halfX, halfZ, reliefHalfX = halfX) {
   //                              at truck height, and the gate is beyond them. A box on any of them closes the
   //                              route as surely as the mass does. Nothing solid stands within 6 m of the centre
   //                              line at truck height, so the run-in is always open.
-  // THE FINISH STRAIGHT IS FREE (Daniel 2026-09-25 21:19: "The finish-straight passage must be completely free. A
+  // THE FINISH STRAIGHT IS FREE (the owner 2026-09-25 21:19: "The finish-straight passage must be completely free. A
   // truck at speed crosses it with no hit and no slowdown from a collider ... Whatever is now in that passage, in the
   // core or in Unity, comes out. Do not add a box to keep the mesh honest if it stands in the passage").
   //   MEASURED before (straight.mjs, 20 seeds, full throttle from x 60): on the spawn bay's own lane, z 10.2, 17 of
@@ -208,7 +208,7 @@ export function mapSolids(ground, halfX, halfZ, reliefHalfX = halfX) {
   //   The passage is the tunnel between its ribs, |z| < 32.8, from the miner's door to the gate: nothing in it is
   //   solid at any height. The walls, ribs, jambs and seams line it and stay; the coin stacks are past the gate and
   //   outside the mouth, and stay.
-  // THE CORRIDOR LINING IS OUT, AND THE COIN STACKS STAND WHERE THEY ARE DRAWN (Daniel 2026-09-26 07:18, phone, block
+  // THE CORRIDOR LINING IS OUT, AND THE COIN STACKS STAND WHERE THEY ARE DRAWN (the owner 2026-09-26 07:18, phone, block
   // 968644: "The collisions left and right of the finish straight are wrong. They come out. The passage stays free ...
   // The circled stack needs a collision. You can drive through it now. The box is where that drawn stack stands, not
   // where an old measurement put coin_stack").

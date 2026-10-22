@@ -9,9 +9,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { NEXTBLOCK, NEXTBLOCK_MANIFEST, NEXTBLOCK_GAME_ID, nextblockManifestBody, NEXTBLOCK_CORES, NEXTBLOCK_CORES_V3, NEXTBLOCK_ITEMS, TRUCK_F0CC_HASH } from '../plugin/nextblock.js';
+import { NEXTBLOCK, NEXTBLOCK_MANIFEST, NEXTBLOCK_GAME_ID, nextblockManifestBody, NEXTBLOCK_CORES, NEXTBLOCK_CORES_V3, NEXTBLOCK_ITEMS, TRUCK_F0CC_HASH, TRUCK_68E2_HASH } from '../plugin/nextblock.js';
 import { GAME as V2, MANIFEST_V2, GAME_ID_V2 } from '../plugin/nextblock-v2.js';
 import { GAME as V3, MANIFEST_V3, GAME_ID_V3 } from '../plugin/nextblock-v3.js';
+import { MANIFEST_V5 } from '../plugin/nextblock-v5.js';
 import { ITEMS_VERSION } from 'arena-sdk/constants';
 import { encodeManifestBody, manifestStands, gameIdOf } from 'arena-sdk/manifest';
 import { donationSetId } from 'arena-sdk/donation';
@@ -44,10 +45,13 @@ test('versions 1 and 2 stand as they were signed, with the five cores they list'
   assert.deepEqual(MANIFEST_V2.cores.map((c) => toHex(c.hash)).sort(), [...NEXTBLOCK_CORES.keys()].sort());
 });
 
-test('version 3 lists the core this tree builds, and a node hosts versions 1, 2 and 3 as registered', () => {
-  assert.ok(MANIFEST_V3.cores.some((c) => toHex(c.hash) === coreHashHex()), 'the manifest does not list the core this tree builds');
+test('version 3 lists the truck versions 1-4 name, and a node hosts versions 1, 2 and 3 as registered', () => {
+  // kanban #523: src/ builds a5c5766a (comments cleaned), which only version 5 names; versions 1-4 name 68e2b3d6 from frozen/68e2b3d6
+  assert.ok(MANIFEST_V3.cores.some((c) => toHex(c.hash) === TRUCK_68E2_HASH), 'the manifest does not list 68e2b3d6');
+  assert.equal(coreHashHex(new URL('../frozen/68e2b3d6', import.meta.url).pathname), TRUCK_68E2_HASH);
+  assert.ok(MANIFEST_V5.cores.some((c) => toHex(c.hash) === coreHashHex()), 'version 5 lists the core this tree builds');
   assert.ok(MANIFEST_V3.cores.some((c) => toHex(c.hash) === TRUCK_F0CC_HASH), 'version 3 names the core that knows the larger truck');
-  assert.ok(NEXTBLOCK_MANIFEST.cores.some((c) => toHex(c.hash) === coreHashHex()), 'version 1 lists the truck this tree builds');
+  assert.ok(NEXTBLOCK_MANIFEST.cores.some((c) => toHex(c.hash) === TRUCK_68E2_HASH), 'version 1 lists 68e2b3d6');
   assert.equal(NEXTBLOCK_MANIFEST.cores.some((c) => toHex(c.hash) === TRUCK_F0CC_HASH), false, 'version 1 names no core that knows the larger truck');
   assert.deepEqual(MANIFEST_V3.gameName, 'nextblock');
   const hosted = hostedPlugins([NEXTBLOCK, V2, V3]);

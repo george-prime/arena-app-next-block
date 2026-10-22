@@ -1,5 +1,5 @@
 {
- "about": "The client files Next Block's manifests pin, by version (kanban #569): the app's own list; the Arena's packages/arena-client/known-good-clients.json carries the same (games.nextblock), checked equal by the Arena's tests.",
+ "about": "The client files Next Block's manifests pin, by version (kanban #569): the app's own list; the Arena's packages/arena-client/known-good-clients.json carries the same (games.nextblock), checked equal by the Arena's tests. pinnedV5: the browser bundles version 5 names (kanban #523), the cleaned cores a5c5766a and 0847c99f; versions 1-4 keep pinned.",
  "pinned": {
   "blwp-core.js": [
    "f4f71ab9773701f8a321fe40d98163d8b704ae22780b879165c27a846297c203",
@@ -66,6 +66,14 @@
   ],
   "site.webmanifest": [
    "8643cd11e25859804f72bfb1498aaf9a4dd674b857edb557d50dbe0be2a77e8c"
+  ]
+ },
+ "pinnedV5": {
+  "core-a5c5766a.js": [
+   "85a94c656db4bdb78a325704df4e2047bfa4d9c28816d48d104f1af4f57ae31c"
+  ],
+  "core-0847c99f.js": [
+   "41535dc6159d18464c7911e66984f2dc04ac5f5a593d1f759711f6ea07b1124d"
   ]
  }
 }

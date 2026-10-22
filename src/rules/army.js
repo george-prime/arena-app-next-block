@@ -32,7 +32,7 @@ export const COURIER_RANGE = Math.imul(34, ONE);
  * is closer than it is, and multiplies the shell. Heat ZERO is still the C#
  * recording. Full heat used the C# 1.4 / 2.5 / 0.6 factors and covered the
  * whole 85 m half-map (tanks noticed at 81.6 m), so the rim was not a rim
- * and a loaded run could not reach the gate. M1.a16 (Daniel 2026-09-07):
+ * and a loaded run could not reach the gate. M1.a16 (the owner 2026-09-07):
  * keep it hard, 30-40% of committed runs should get through.
  *
  * A tank at full heat now notices at 34 x 1.3 = 44.2 m, will leave a foe
@@ -218,7 +218,7 @@ function haltDraw(index, cycle, salt) {
  * The cycle a tick falls in is found by summing from zero, because nothing is
  * stored: about eleven steps at ninety seconds and nineteen at a full block.
  * The alternative was a ninth word per unit, which moves `O_ARMY`, `O_AIR`,
- * `O_HELIS`, `O_BOMBS`, `O_SQUADS`, `WORDS`, `BlwpLayout.cs` and the C# state
+ * `O_HELIS`, `O_BOMBS`, `O_SQUADS`, `WORDS`, `ArenaLayout.cs` and the C# state
  * buffer - a protocol change for one comparison of seventy-eight.
  */
 export function standingStill(index, tick) {
@@ -266,7 +266,7 @@ const RIFLE_TRAIL_MAX = Math.imul(40, ONE);  // and trails it by at most 40 m
 const OVERRUN_DEPTH = Math.imul(14, ONE);   // Army.OverrunDepth
 const FALL_BACK = Math.imul(34, ONE);
 
-/** The post office's paving edge: the army's west kerb (Daniel 2026-09-19 13:09, "no tank on the loading dock"). */
+/** The post office's paving edge: the army's west kerb (the owner 2026-09-19 13:09, "no tank on the loading dock"). */
 export const DOCK_EDGE = 5465702;                  // 83.4 m
 
 
@@ -297,7 +297,7 @@ const SQUAD_SPAN = Math.imul(76, ONE);     // anchors run from -76 to +76
 const SQUAD_WIDTH = Math.imul(16, ONE);    // each unit sits within 8 m of its anchor
 
 /**
- * ARMOUR DOCTRINE (WAR_TACTICS.md, Daniel 2026-09-16 18:20): where a tank goes is assigned in `rules/tactics.js` -
+ * ARMOUR DOCTRINE (WAR_TACTICS.md, the owner 2026-09-16 18:20): where a tank goes is assigned in `rules/tactics.js` -
  * teams, roles, frontage slots, shoot-and-scoot - and handed in on `u` (tac, tacX, tacDepth, tacBounding). This step only
  * moves the tank there, and picks the hull-down spot for a tank that holds.
  *
@@ -410,7 +410,7 @@ const OVERRUN = Math.imul(14, ONE);
  * along. That only stays harmless while this runs from the first tick, which
  * is why it is at the top of the army's step and not somewhere convenient.
  */
-// WAR_TACTICS.md §1.1 (Daniel 2026-09-16): never inside 12 m, tank to tank, either side - was C#'s 8.5 m friendly and
+// WAR_TACTICS.md §1.1 (the owner 2026-09-16): never inside 12 m, tank to tank, either side - was C#'s 8.5 m friendly and
 // 7.5 m hostile, and the measured nearest tank sat at 8.50 m, pressed against it, on half of all tank-ticks.
 const FRIENDLY_SPACING = Math.imul(12, ONE);
 const HOSTILE_SPACING = Math.imul(12, ONE);
@@ -469,7 +469,7 @@ const CLEAR_RADIUS = idiv(Math.imul(16, ONE), 10);   // 1.6 m, C#'s `hard`
  * space around itself.
  *
  * THE SPEED IS THE CORE'S OWN VELOCITY, and getting that right is the whole
- * of this port. `Battlefield` reads `BlwpCore.Velocity` - which is (T_VX,
+ * of this port. `Battlefield` reads `ArenaCore.Velocity` - which is (T_VX,
  * T_VZ) - and takes its magnitude, falling back to `Rigidbody.linearVelocity`
  * only when the core is not driving. That fallback is the PhysX remnant and
  * the comment above it in the game says what it cost: the truck's body is
@@ -525,8 +525,8 @@ export const SIDE_BEAR = 1;
  * before the wobble or every recorded transcript stops replaying.
  */
 /**
- * A POST INSIDE A CRATER IS ON ITS RIM INSTEAD, ON THE TANK'S OWN SIDE (Daniel 2026-09-19 15:57,
- * daniel-screens/tanks-stuck-craters-1557.jpg: "tanks stuck in craters - they do not move away and cannot attack").
+ * A POST INSIDE A CRATER IS ON ITS RIM INSTEAD, ON THE TANK'S OWN SIDE (the owner 2026-09-19 15:57,
+ * screens/tanks-stuck-craters-1557.jpg: "tanks stuck in craters - they do not move away and cannot attack").
  *
  * Measured before this rule, over 90 s with nukes landing, seeds 1 / 2 / 3: 44.7% / 45.7% / 52.4% of all living
  * tank-ticks were spent within 1.5 m of a crater rim, and 44131 of seed 1's 44193 of those had the tank's POST
@@ -537,7 +537,7 @@ export const SIDE_BEAR = 1;
  *
  * The post SLIDES ALONG ITS OWN DEPTH LINE to the nearer edge of the bowl - x only, the line's z untouched - so the
  * hull drives AROUND the hole and keeps its place in the front, instead of standing on the lip. Projecting it
- * radially onto the rim was the first cut and it is not what Daniel asked for: measured, it left the tank within
+ * radially onto the rim was the first cut and it is not what the owner asked for: measured, it left the tank within
  * 1.5 m of a rim on 36.0 / 29.3 / 26.9% of tank-ticks, because the rim was then the post. Craters are visited in
  * index order and the point is re-checked, because bowls overlap (his shot has three); four passes, then it stands
  * where it is - a bounded loop, so the tick cost cannot run away.
@@ -654,7 +654,7 @@ export function stepUnit(u, rng, seamZ, truckX, truckZ, truckHeading, heat, half
     // HULL-DOWN, for the overwatch tank: the candidate with the highest ground between it and the enemy.
     // the crest the core holds for this tank (tactics.js crestHold, §4.1 hysteresis), handed in as an offset from the line
     if (!u.tacBounding && ground) hold = add(hold, u.tacCrest | 0);
-    // AND NOT INTO A CRATER (Daniel 2026-09-19 15:57). A post in a bowl and the AvoidWrecks push below pull against
+    // AND NOT INTO A CRATER (the owner 2026-09-19 15:57). A post in a bowl and the AvoidWrecks push below pull against
     // each other every tick, and the hull stands on the lip for as long as the crater lives: measured 44.7 / 45.7 /
     // 52.4% of living tank-ticks within 1.5 m of a rim on seeds 1 / 2 / 3, longest stay 68.6 / 68.6 / 73.6 s. The
     // post goes to the rim on this tank's own side (tactics.js clearOfCraters), so it paths around and keeps firing.
@@ -948,7 +948,7 @@ export function stepUnit(u, rng, seamZ, truckX, truckZ, truckHeading, heat, half
     stepZ = mulFast(cos(u.heading), along);
   }
 
-  // AND NOT ONTO EITHER BUILDING (Daniel 2026-09-19 13:09 and 15:58). The army's own edge is FRONT_X - 4 = 88 m.
+  // AND NOT ONTO EITHER BUILDING (the owner 2026-09-19 13:09 and 15:58). The army's own edge is FRONT_X - 4 = 88 m.
   // West, the post office's paving reaches to 83.4 m, so the kerb is nearer than the army's edge and it wins.
   // East, the miner's drawn west edge is the door (map.js MINER_DOOR_X, 108.4 m since the world grew), so the
   // army's own edge is the nearer one there. The clamp is therefore NOT symmetric, and writing it as one number
@@ -966,7 +966,7 @@ export function stepUnit(u, rng, seamZ, truckX, truckZ, truckHeading, heat, half
   // stay out; what is taken is the shape of the rule, not the feature whose
   // share of the gap measured zero.
   //
-  // THE 0.6 m MAN IS GONE (Daniel 2026-09-19, and §11.3's own sentence: the
+  // THE 0.6 m MAN IS GONE (the owner 2026-09-19, and §11.3's own sentence: the
   // push "no longer applies to a man; it still applies to a tank (3.2 m)").
   // Both sizes were carried across together because they sat on one line in
   // C#, and that was the leftover: C# wrote them when a man in a hole was a
@@ -1015,7 +1015,7 @@ export function stepUnit(u, rng, seamZ, truckX, truckZ, truckHeading, heat, half
   // at 92.0 m against an 88 m edge. A rule that other rules may step over is not a rule.
   if (u.armour) u.x = clamp(u.x, neg(min(ARMOUR_WEST, halfX)), min(ARMOUR_EAST, halfX));
 
-  // NOTHING OFF THE TRUCK (Daniel 2026-09-16 17:00: "Tanks must NOT react to the truck except by shooting. No
+  // NOTHING OFF THE TRUCK (the owner 2026-09-16 17:00: "Tanks must NOT react to the truck except by shooting. No
   // dodge. No being pushed. They are much stronger than him; that must be obvious."). The ring that held armour
   // 28 m off the truck (3c4f849), and the cap on it (11ea754), are gone: measured with it, no tank ever stood inside
   // 12 m of a truck held in the battle (0 tank-ticks, 5 seeds x 3 places x 2 beds) because the truck moved them. A
@@ -1153,7 +1153,7 @@ const FIRE_RELOAD_SPAN = 108;    // up to 3.2 s
  */
 export const HIT_PER_MIL = 550;
 
-const FIRE_DAMAGE_MIN = Math.imul(12, ONE);   // 11 -> 12, about 10% (Daniel 2026-09-23)
+const FIRE_DAMAGE_MIN = Math.imul(12, ONE);   // 11 -> 12, about 10% (the owner 2026-09-23)
 const FIRE_DAMAGE_SPAN = Math.imul(14, ONE);
 
 /**

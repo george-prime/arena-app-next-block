@@ -1,4 +1,4 @@
-// THE CANDLES ARE TERRAIN - WAR_TACTICS.md §4.15, as a RAISED RIBBON (playtest fix 492f128, Daniel 2026-09-17 13:51).
+// THE CANDLES ARE TERRAIN - WAR_TACTICS.md §4.15, as a RAISED RIBBON (playtest fix 492f128, the owner 2026-09-17 13:51).
 //
 // The tape's candles as a height layer the surface reader adds (`surfaceAt = relief + candles - craters`),
 // on a static chart band levelled to a pancake of the relief. 32 slots of 5.756 m between the apron and the miner (spawn
@@ -14,7 +14,7 @@ import { SAMPLES, FRONT_DEPTH, FIELD_X0, FIELD_SLOT } from './frontline.js';
 import { heightAtWorld } from './ground.js';
 
 export const CANDLES = 32;
-// SPAWN RULING B (Daniel 2026-09-17): the truck leaves the apron, then meets the chart. The first x-face stands 26 m past
+// SPAWN RULING B (the owner 2026-09-17): the truck leaves the apron, then meets the chart. The first x-face stands 26 m past
 // the spawn centre (START_X -100.4 m; the nose is 3.275 m ahead of it, so the nose meets it 22.7 m out, past the 22 m
 // apron), and the 32 slots end at the miner's face (x 108.4 m), so no body stands in the gate throat or across the
 // delivery line (x 114). 32 slots over 184.2 m: pitch 5.75625 m, the corridor kept at 2.8 m, the body what is left.
@@ -26,7 +26,7 @@ export const CANDLE_H = ONE;                       // 1 m plateau (was 2)
 export const CANDLE_RAMP = 262144;                 // 4 m ramp: 1 m over 4 m is 25% (was 5 m at 40%)
 export const CANDLE_MIN_LENGTH = ONE;              // a doji is built 1 m long
 /**
- * THE WICK IS GROUND TOO (§4.15, Daniel 2026-09-17 15:30: "can I drive through it? that would not be logical"): a ridge
+ * THE WICK IS GROUND TOO (§4.15, the owner 2026-09-17 15:30: "can I drive through it? that would not be logical"): a ridge
  * 0.5 m tall with a 1 m top along the slot's centre line, from the body's end out to the high (and from the low to the
  * body's other end), its sides and far end ramped at 25% (2 m). It runs R into the body, where the body's own ramp is
  * already past 0.5 m, so ridge and body meet without a step. Nothing stands above 1 m; nothing is passed through.
@@ -72,7 +72,7 @@ function zOfPrice(p, lo, span, halfZ) {
  * does), so which tape sample starts slot 0 follows the parity of the samples taken: `taken` odd drops the oldest sample
  * and leaves the newest slot the forming candle.
  *
- * A CONTINUOUS STAIRCASE (§4.15, Daniel 2026-09-17 13:42; found on the live top-down: scattered pillars with gaps). The
+ * A CONTINUOUS STAIRCASE (§4.15, the owner 2026-09-17 13:42; found on the live top-down: scattered pillars with gaps). The
  * tape is a series of closes: candle c's open is the previous candle's close (sample 2c - 1; the first slot's open is its
  * own first sample, the one before it has left the tape), its close sample 2c + 1, its low and high the min and max of
  * those three samples. Every body starts where the last one ended.
@@ -162,7 +162,7 @@ function faceDistance(layout, n, z0, z1, z, across) {
 }
 
 /**
- * STATIC, NOT DYNAMIC (§4.15, Daniel 2026-09-17 09:40): the band is fixed, so no ground moves under a wheel. Inside
+ * STATIC, NOT DYNAMIC (§4.15, the owner 2026-09-17 09:40): the band is fixed, so no ground moves under a wheel. Inside
  * |x| <= 104, |z| <= 54 the relief is a pancake - `apron + 0.15 (relief - apron)`, the mempool's swells kept low. Outside
  * it, within the band's x, the relief is held to a 40% cone from the pancake at the band's edge,
  * `|h - edge| <= 0.4 (|z| - 54)` (12.4 m at the map's edge), so no ground rises (or falls) toward the band faster than a

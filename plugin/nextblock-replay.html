@@ -101,7 +101,7 @@
   } catch (e) { say(`the run cannot be read: ${e.message}`); return; }
   await new Promise((ok, no) => { const s = document.createElement('script'); s.src = `${base}/replay/core.js?round=${round}`; s.onload = ok; s.onerror = () => no(new Error('the core that round names')); document.head.appendChild(s); })
     .catch((e) => { say(`${base} serves no ${e.message}`); throw e; });
-  const R = window.BLWP_REPLAY, CORE = R.CORE, L = R.layout, ONE = R.ONE;
+  const R = window.NEXTBLOCK_REPLAY || window.BLWP_REPLAY, CORE = R.CORE, L = R.layout, ONE = R.ONE;
 
   // STEP THE WHOLE RUN ONCE, keeping what the map draws at every tick.
   // THE WORLD BY THE ROUND'S RULE (#23): one world per round under a shared-world config (v4), the player's own under any
