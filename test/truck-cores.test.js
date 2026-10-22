@@ -7,13 +7,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { computeCurrentConfigHash, computeDe2fConfigHash, computeConfigV3Hash } from '../config/game-config.js';
-import { CORE as NOW } from '../src/adapter.js';
+import { CORE as NOW } from '../frozen/68e2b3d6/adapter.js';   // the truck versions 1-4 name (kanban #523: src/ is version 5's a5c5766a)
+import { CORE as A5C5 } from '../frozen/a5c5766a/adapter.js';
+import { CORE as F0847 } from '../frozen/0847c99f/adapter.js';
 import { CORE as F2069 } from '../frozen/2069b4c2/adapter.js';
 import { CORE as F7E21 } from '../frozen/7e2123d1/adapter.js';
 import { CORE as FDE2F } from '../frozen/de2f263d/adapter.js';
 import { toHex } from 'arena-sdk/hash';
 import { TRUCK_CURRENT_CONFIG, TRUCK_V3_CONFIG, TRUCK_DE2F_CONFIG, TRUCK_NAME, TRUCK_RUN_TICKS, TRUCK, TRUCK_2069, TRUCK_7E21,
-  TRUCK_DE2F, TRUCK_BEFORE_FORK, NEXTBLOCK_CORES, NEXTBLOCK_CORES_V3, TRUCK_F0CC } from '../plugin/truck-cores.js';
+  TRUCK_DE2F, TRUCK_BEFORE_FORK, NEXTBLOCK_CORES, NEXTBLOCK_CORES_V3, TRUCK_F0CC, TRUCK_A5C5, TRUCK_0847, NEXTBLOCK_CORES_V5 } from '../plugin/truck-cores.js';
 
 test('the written config hashes are the computed ones', () => {
   assert.equal(TRUCK_CURRENT_CONFIG, toHex(computeCurrentConfigHash()));
@@ -37,6 +39,14 @@ test('each core carries the files the sandbox loads, and a native adapter only w
   assert.equal(NEXTBLOCK_CORES_V3.size, 6, 'version 3: the five and the truck that knows the larger truck');
   assert.equal(NEXTBLOCK_CORES_V3.get(TRUCK_F0CC.hash), TRUCK_F0CC);
   assert.ok(TRUCK_F0CC.root && TRUCK_F0CC.url.startsWith(TRUCK_F0CC.root));
+  // version 5 (kanban #523): only the two cores with their comments cleaned, each frozen with its own adapter
+  assert.equal(NEXTBLOCK_CORES_V5.size, 2);
+  for (const [c, a] of [[TRUCK_A5C5, A5C5], [TRUCK_0847, F0847]]) {
+    assert.ok(c.root && c.url.startsWith(c.root), c.name);
+    assert.equal(Object.keys(c).includes('adapter'), false);
+    assert.equal(c.adapter, a);
+    assert.equal(NEXTBLOCK_CORES_V5.get(c.hash), c);
+  }
 });
 
 test('importing the registration evaluates no core module', async () => {
