@@ -43,11 +43,13 @@ export function guardLines(hash, tree, hits, baseline) {
 
 // 68e2b3d6 (2026-10-07): §4.11's objectives from the chart, RIDGE_GOAL gone; 7e2123d1 frozen beside it in
 // core/frozen/7e2123d1 (its hash computed from its files: 7e2123d1990d1443...).
-test('the baseline names the four cores a seat installs, and core/src is the live core 68e2b3d6', () => {
-  assert.deepEqual(Object.keys(BASELINE.cores).sort(), ['2069b4c2', '68e2b3d6', '7e2123d1', 'de2f263d']);
-  assert.equal(BASELINE.cores['68e2b3d6'].tree, 'src');
+// a5c5766a (kanban #523): 68e2b3d6 with its comments cleaned of names, ticket numbers and blwp - core/src since, 68e2b3d6 frozen.
+test('the baseline names the cores a seat installs, and core/src is the live core a5c5766a', () => {
+  assert.deepEqual(Object.keys(BASELINE.cores).sort(), ['2069b4c2', '68e2b3d6', '7e2123d1', 'a5c5766a', 'de2f263d']);
+  assert.equal(BASELINE.cores['a5c5766a'].tree, 'src');
+  assert.equal(BASELINE.cores['68e2b3d6'].tree, 'frozen/68e2b3d6');
   assert.equal(BASELINE.cores['7e2123d1'].tree, 'frozen/7e2123d1');
-  assert.ok(coreHashHex().startsWith('68e2b3d6'), 'core/src is no longer 68e2b3d6: a new core needs its own baseline entry');
+  assert.ok(coreHashHex().startsWith('a5c5766a'), 'core/src is no longer a5c5766a: a new core needs its own baseline entry');
 });
 
 for (const [hash, { tree, hits: baseline }] of Object.entries(BASELINE.cores)) {

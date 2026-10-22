@@ -53,19 +53,26 @@ export const TRUCK_DE2F_CONFIG = 'dbb493445fd56ba099bf8651a444f7c6de4b36add1cb01
 export const DE2F_HASH = 'de2f263da7ddf892699713ccd43041fb2ea881df9994fbe9f32581904e32e6c8';
 export const FOUNDING_CONFIG_ON_DE2F_BEFORE_MS = Date.parse('2026-10-04T13:00:00Z');
 
-/** The truck: the network's title, the current core with the config its rounds name. */
+/**
+ * The truck: the network's title, the core versions 1-4 name with the config its rounds name - 68e2b3d6, FROZEN since its comments
+ * were cleaned of names, ticket numbers and blwp (kanban #523): src/ is now the working copy of version 5's truck (a5c5766a, below),
+ * and every round, series and page that names "the truck" (TRUCK_CORE_HASH, the page's default core) keeps naming 68e2b3d6.
+ */
+export const TRUCK_68E2_HASH = '68e2b3d6757dc26a76f95eaf0b57799f4e965267ae70a2e79ce4228154acb589';
+const FROZEN_68E2 = fileURLToPath(new URL('../frozen/68e2b3d6', import.meta.url));
+if (coreHashHex(FROZEN_68E2) !== TRUCK_68E2_HASH) throw new Error(`core/frozen/68e2b3d6 hashes to ${coreHashHex(FROZEN_68E2)}, not the core it keeps`);
 export const TRUCK = withAdapter({
   name: TRUCK_NAME,
-  hash: coreHashHex(),
-  url: new URL('../src/adapter.js', import.meta.url).href,
-  root: new URL('../src/', import.meta.url).href,
+  hash: TRUCK_68E2_HASH,
+  url: new URL('../frozen/68e2b3d6/adapter.js', import.meta.url).href,
+  root: new URL('../frozen/68e2b3d6/', import.meta.url).href,
   // TWO CONFIGS ON ONE CORE (#23, Daniel 2026-10-04): the current one, v4 - one world per round, shared by its players -
   // which every series published from now names; and v3 (f51759b6), the per-player world the 10-06 series was published
   // on, kept installed so its rounds open and replay exactly as published.
   configs: new Map([[TRUCK_CURRENT_CONFIG, CURRENT_CONFIG], [TRUCK_V3_CONFIG, {}]]),
   // the bundle the replay page runs for this core's rounds (core/tools/bundle-replay.js)
   replayFile: new URL('../dist/blwp-replay-core.js', import.meta.url),
-}, '../src/adapter.js');
+}, '../frozen/68e2b3d6/adapter.js');
 
 /**
  * THE TRUCK BEFORE C BECAME THE BED FILL AND T SANK FROM 20 S (Daniel 2026-10-04 08:54 and 09:17; accepted path A): core
@@ -175,23 +182,8 @@ export function nextblockRoundWarnings(c) {
   return out;
 }
 
-/**
- * 68e2b3d6, THE TRUCK VERSIONS 1-4 NAME, KEPT INSTALLED (kanban #523): the truck's source until its comments were cleaned of
- * names, ticket numbers and blwp, which made the truck in src/ another core (a5c5766a below). Its files are frozen in
- * frozen/68e2b3d6 and its hash computed from them; its bundles are the truck's as they were (dist/blwp-core.js, the replay
- * bundle dist/blwp-replay-core.js), so every round versions 1-4 published plays and replays exactly as before.
- */
-export const TRUCK_68E2_HASH = '68e2b3d6757dc26a76f95eaf0b57799f4e965267ae70a2e79ce4228154acb589';
-const FROZEN_68E2 = fileURLToPath(new URL('../frozen/68e2b3d6', import.meta.url));
-if (coreHashHex(FROZEN_68E2) !== TRUCK_68E2_HASH) throw new Error(`core/frozen/68e2b3d6 hashes to ${coreHashHex(FROZEN_68E2)}, not the core it keeps`);
-export const TRUCK_68E2 = withAdapter({
-  name: `${TRUCK_NAME} (68e2b3d6)`,
-  hash: TRUCK_68E2_HASH,
-  url: new URL('../frozen/68e2b3d6/adapter.js', import.meta.url).href,
-  root: new URL('../frozen/68e2b3d6/', import.meta.url).href,
-  configs: new Map([[TRUCK_CURRENT_CONFIG, CURRENT_CONFIG], [TRUCK_V3_CONFIG, {}]]),
-  replayFile: new URL('../dist/blwp-replay-core.js', import.meta.url),
-}, '../frozen/68e2b3d6/adapter.js');
+/** 68e2b3d6 by its own name (kanban #523): the truck above - its files frozen/68e2b3d6, its bundles dist/blwp-core.js and blwp-replay-core.js. */
+export const TRUCK_68E2 = TRUCK;
 
 /**
  * THE TWO CORES VERSION 5 NAMES (kanban #523): 68e2b3d6 and f0cc7b7b with their comments cleaned of names, ticket numbers
