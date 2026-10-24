@@ -16,7 +16,7 @@
   canvas { display: block; width: auto; height: auto; max-width: 100%; max-height: 58vh; margin: 0 auto; background: var(--panel); }
   #legend { padding: 6px 12px; color: var(--dim); font-size: 12px; }
   #legend b { font-weight: 600; }
-  /* THE TICK'S OWN NUMBERS, under the map on every tick (Daniel 2026-09-26 07:12), drawn the way the game's HUD draws
+  /* THE TICK'S OWN NUMBERS, under the map on every tick (2026-09-26 07:12), drawn the way the game's HUD draws
      them (11:04): a CONDITION bar, a DANGER meter and the SCORE as the large number, then the numeric line and the working */
   #readout { padding: 10px 12px 14px; font-variant-numeric: tabular-nums; line-height: 1.5; overflow-wrap: anywhere; }
   #meters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
@@ -28,7 +28,7 @@
   #score-big { margin: 8px 0 4px; font-weight: 800; color: #ffd24d; font-size: clamp(30px, 9vw, 56px); line-height: 1.1; }
   #score-big small { font-size: 0.45em; letter-spacing: 0.06em; margin-right: 0.4em; }
   #work { color: var(--dim); }
-  /* THE RESULT FIRST, THE DETAILS BELOW (Daniel 2026-09-26 14:14): a glance says whether the round succeeded; the round,
+  /* THE RESULT FIRST, THE DETAILS BELOW (2026-09-26 14:14): a glance says whether the round succeeded; the round,
      the entry, the host, the ticks, the score's working and the core follow as a list - whole, wrapped, never cut */
   #result { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
   #result .word { font-weight: 800; font-size: clamp(26px, 8vw, 44px); letter-spacing: 0.03em; }
@@ -64,10 +64,10 @@
 <div id="legend"><b style="color:var(--truck)">▲</b> your truck · <b style="color:var(--bull)">■</b>/<b style="color:var(--bear)">■</b> tanks ·
   <b style="color:var(--bull)">•</b>/<b style="color:var(--bear)">•</b> infantry · ◆ helicopters · <b style="color:#ff8a65">●</b> bombs</div>
 <!-- THE PROTOCOL'S OWN DECODERS AND SEED (the client bundle), from this node - RELATIVE, so a node published under a
-     path (https://host/blwp-a/replay) loads its own and not the root's. -->
+     path (https://host/node-a/replay) loads its own and not the root's. -->
 <script src="replay/client.js"></script>
 <script>
-// A GAME REPLAY (Daniel 2026-09-25 18:39). Everything is fetched from a node that holds the run - this one, or the
+// A GAME REPLAY (2026-09-25 18:39). Everything is fetched from a node that holds the run - this one, or the
 // round's other committee endpoints when it has no transcript - and the run is replayed by stepping the core the round
 // names (/replay/core.js, served only for that round's own core). The page draws what that core stepped; it simulates
 // nothing of its own. Not a live socket: the whole run is stepped once, then played like a video.
@@ -77,7 +77,7 @@
   const say = (s) => { document.getElementById('status').textContent = s; };
   if (!/^[0-9a-f]{64}$/.test(round) || !/^[0-9a-f]{64}$/.test(entry)) { say('the link names no round and entry (?round=<hex>&entry=<hex>)'); return; }
   // THIS NODE is the origin AND the path it is published under: an advertised endpoint may carry one
-  // (wss://host/blwp-a), and location.origin alone would ask the host's root, which is not this node.
+  // (wss://host/node-a), and location.origin alone would ask the host's root, which is not this node.
   const here = location.origin + location.pathname.replace(/\/replay\/?$/, '');
   const tryJson = async (url) => { try { const r = await fetch(url); return r.ok ? await r.json() : null; } catch (e) { return null; } };
   const bytesOf = async (url) => { const r = await fetch(url); if (!r.ok) throw new Error(`${url}: ${r.status} ${await r.text()}`); return new Uint8Array(await r.arrayBuffer()); };
@@ -104,10 +104,10 @@
   const R = window.NEXTBLOCK_REPLAY || window.BLWP_REPLAY, CORE = R.CORE, L = R.layout, ONE = R.ONE;
 
   // STEP THE WHOLE RUN ONCE, keeping what the map draws at every tick.
-  // THE WORLD BY THE ROUND'S RULE (#23): one world per round under a shared-world config (v4), the player's own under any
+  // THE WORLD BY THE ROUND'S RULE: one world per round under a shared-world config (v4), the player's own under any
   // other - the one function the page and the seats use, so the replay is the run in the world it was played in
   const seedWord = ARENACLIENT.worldSeedWord({ entry: ent, roundRandomness: beacon, contract, roundId: ARENACLIENT.fromHex(round) });
-  console.log('[blwp] replay world seed 0x' + (seedWord >>> 0).toString(16) + (ARENACLIENT.worldIsShared(contract) ? ' (one world for the round)' : ' (the player\'s own world)'));
+  console.log('[replay] replay world seed 0x' + (seedWord >>> 0).toString(16) + (ARENACLIENT.worldIsShared(contract) ? ' (one world for the round)' : ' (the player\'s own world)'));
   const st = CORE.start(seedWord);
   // an older core a stored round names may keep no map solids of its own (its host set them): draw none then
   const solids = st.solids && st.solids.box ? { n: st.solids.n, box: Int32Array.from(st.solids.box.subarray(0, st.solids.n * 6)) } : { n: 0, box: new Int32Array(0) };
@@ -148,7 +148,7 @@
   const hx = R.HALF_X / ONE, hz = R.HALF_Z / ONE;
   const sx = (x) => ((x / ONE + hx) / (2 * hx)) * cv.width, sz = (z) => ((hz - z / ONE) / (2 * hz)) * cv.height;
   const side = (v) => (v < 0 ? '#4caf50' : '#e05252');
-  // THE MAP'S OWN LANDMARKS (Daniel 2026-09-26 11:04, the phone replay: "the map is only dots", he could not tell where
+  // THE MAP'S OWN LANDMARKS (2026-09-26 11:04, the phone replay: "the map is only dots", he could not tell where
   // the truck was). Drawn once from the core this page stepped - its solids as it built them at the start, and the map's
   // own constants - not a second scene: the post office's shell (teal, MEMPOOL), the miner's (magenta, MINER), and the
   // finish straight, the open corridor from the miner's door to the gate.
@@ -212,7 +212,7 @@
     }
     // the truck: heading is a fraction of a turn in Q16.16, 0.25 being +x
     const a = (th / ONE) * 2 * Math.PI;
-    // large, outlined and ringed, so it is found at once on a phone (Daniel 11:04: he could not tell where the truck was)
+    // large, outlined and ringed, so it is found at once on a phone (the owner 11:04: he could not tell where the truck was)
     g.save(); g.translate(sx(tx), sz(tz));
     g.strokeStyle = 'rgba(255, 213, 79, 0.9)'; g.lineWidth = 4; g.beginPath(); g.arc(0, 0, 34, 0, 7); g.stroke();
     g.rotate(a); g.fillStyle = '#ffd54f'; g.strokeStyle = '#0b0f14'; g.lineWidth = 4;
@@ -221,7 +221,7 @@
     readout(f);
   }
 
-  // THE TICK'S NUMBERS (Daniel 2026-09-26 07:12), on every tick, playing or scrubbed. The factors are the ones scoreOf
+  // THE TICK'S NUMBERS (2026-09-26 07:12), on every tick, playing or scrubbed. The factors are the ones scoreOf
   // multiplies - score.js's own exposure5 (danger), time5 (speed) and cargo5 (load), from the core this page stepped -
   // and the score is the core's scoreOf of the same words: what this tick would pay, delivered or not. Line 2 is the
   // arrival card's working for this tick.
@@ -245,13 +245,13 @@
     document.getElementById('danger-label').textContent = `DANGER \u00d7${dangerF.toFixed(2)}`;
     document.getElementById('danger-bar').style.width = `${(dangerF * 100).toFixed(1)}%`;
     document.getElementById('score-num').textContent = score;
-    // health, danger and score are on the bars above (Daniel 2026-09-26 14:25: the line repeating them is the duplicate);
+    // health, danger and score are on the bars above (2026-09-26 14:25: the line repeating them is the duplicate);
     // speed and practice are on no bar, so they stand here once
     document.getElementById('line1').textContent = `speed ${speed} · practice ${practice ? 'on' : 'off'}`;
     document.getElementById('work').textContent = `load ${load} × danger ${danger} × speed ${speed} × 1000 = ${score}`;
   }
 
-  // THE CORE'S OWN TIME, AS A CLOCK (Daniel 2026-09-26 14:25 and 14:35): mm:ss.ffff - two digits of minutes, two of
+  // THE CORE'S OWN TIME, AS A CLOCK (2026-09-26 14:25 and 14:35): mm:ss.ffff - two digits of minutes, two of
   // seconds, a dot, four digits of the fraction - not a tick number and not seconds jammed against microseconds.
   // A tick is TICK_DT seconds in Q16.16.
   const usOf = (ticks) => Math.round((ticks * R.TICK_DT * 1e6) / ONE);
@@ -274,7 +274,7 @@
     if (at >= transcript.ticks.length - 1) { playing = false; play.textContent = 'play'; return; }
     requestAnimationFrame(tick);
   }
-  // THE RESULT, THEN THE DETAILS (Daniel 2026-09-26 14:14): no one truncated paragraph, no name cut with an ellipsis
+  // THE RESULT, THEN THE DETAILS (2026-09-26 14:14): no one truncated paragraph, no name cut with an ellipsis
   say('');
   document.getElementById('status').style.display = 'none';
   const hexOf = (u8) => Array.from(u8, (b) => b.toString(16).padStart(2, '0')).join('');

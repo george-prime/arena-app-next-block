@@ -1,4 +1,4 @@
-// Tick Tock, Next Block's description and website, signed by its developer key (kanban #276; arena-donor/bin/sign-game-info.mjs).
+// Tick Tock, Next Block's description and website, signed by its developer key (arena-donor/bin/sign-game-info.mjs).
 // Beside the manifest, not in it: game 495516ae keeps its id.
 export const INFO = Object.freeze({
   "description": "Drive a truck through the next Bitcoin block. Every player gets the same block and seed; the best run of the round wins the pot.",

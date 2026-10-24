@@ -1,4 +1,4 @@
-// WHAT A CLIENT LISTS OF NEXTBLOCK VERSION 4 (kanban #397 slice 5): the manifest that sells the larger truck on the reserves' terms - its signed bytes and the
+// WHAT A CLIENT LISTS OF NEXTBLOCK VERSION 4: the manifest that sells the larger truck on the reserves' terms - its signed bytes and the
 // configs it plays as one world per round, as known-v3.js lists version 3.
 //
 //   node packages/arena-protocol/tools/known-games.js packages/nextblock/plugin/known.js packages/nextblock/plugin/known-v4.js
