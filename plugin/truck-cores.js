@@ -1,4 +1,4 @@
-// NEXTBLOCK'S CORES (kanban #202, §0A.2-0A.3; Daniel 2026-10-06: the engine is Bitcoin Arena, the game is
+// NEXTBLOCK'S CORES (§0A.2-0A.3; 2026-10-06: the engine is Bitcoin Arena, the game is
 // "Tick Tock, Next Block" - `nextblock` in code). What was arena-node/src/cores.js's truck half: the cores a node replays
 // nextblock's rounds with (the truck and the four it keeps installed beside it), the configs each plays, the replay
 // bundle each round's page runs, and the game's manifest - registered with a node by its launcher (arena-node/src/main.js),
@@ -14,7 +14,7 @@ import { toHex, fromHex } from 'arena-sdk/hash';
 import { NO_PARENT, RESULT_TYPE, PAYOUT_RULE } from 'arena-sdk/manifest';
 import { ROUND_PERIOD_MS } from 'arena-sdk/series';
 
-// THE REGISTRATION IMPORTS NO CORE (kanban #328, spec §0A.6). A node loads this module in its own thread (ARENA_APPS,
+// THE REGISTRATION IMPORTS NO CORE (spec §0A.6). A node loads this module in its own thread (ARENA_APPS,
 // arena-node/src/main.js), and a core imported here would run there with every right the node has. A node runs a core
 // only in its sandbox (arena-node/src/core-sandbox.js), from the files `root` names, checked against the core's hash.
 // `adapter` is the core imported natively for a PLAYER's own simulation (tests, tools): not enumerable, so no copy of a
@@ -29,19 +29,19 @@ export const TRUCK_NAME = 'btc-logistics truck';
 export const TRUCK_RUN_TICKS = 10800;
 
 /**
- * THE CONFIG A ROUND ON THE TRUCK NAMES (Daniel 2026-10-04, fix 1 of the spec audit; §27A.6 "a round is bound to the config
+ * THE CONFIG A ROUND ON THE TRUCK NAMES (2026-10-04, fix 1 of the spec audit; §27A.6 "a round is bound to the config
  * it was created under"): the current core's own rules, hashed from its constants (genesis.js encodeGameConfigV2) - not
  * the founding config, which the network id commits to and which describes 2069b4c2's rounds.
  */
-// THE CONFIG HASHES, WRITTEN OUT (kanban #328): config/game-config.js computes them from the cores' own rule files, and
+// THE CONFIG HASHES, WRITTEN OUT: config/game-config.js computes them from the cores' own rule files, and
 // importing it here would run those files in the node's thread; test/truck-cores.test.js computes them and checks these.
 export const TRUCK_CURRENT_CONFIG = '2170f25079f5652ba0633f4b44032c1c9b4dac094e6df99dd001e74b5586293d';
 /**
- * v4 MAKES ONE WORLD PER ROUND (#23): nextblock says so on the config itself, and the engine's seed asks the round's game
- * (kanban #203, plugins.js sharedWorld) instead of keeping a list of nextblock's configs. Every other config: per player.
+ * v4 MAKES ONE WORLD PER ROUND: nextblock says so on the config itself, and the engine's seed asks the round's game
+ * (plugins.js sharedWorld) instead of keeping a list of nextblock's configs. Every other config: per player.
  */
 const CURRENT_CONFIG = Object.freeze({ worldShared: true });
-/** 7e2123d1's per-player config (f51759b6), the 10-06 series' (#23): installed beside the current one. */
+/** 7e2123d1's per-player config (f51759b6), the 10-06 series': installed beside the current one. */
 export const TRUCK_V3_CONFIG = 'f51759b6bdc6c738e46910816936c84d72d57e33d2cf04816618912557a76a7c';
 /**
  * THE ROUNDS de2f263d PLAYED BEFORE ITS CONFIG HAD A HASH OF ITS OWN: from 08:23Z on 2026-10-04 the free pair opened rounds
@@ -55,7 +55,7 @@ export const FOUNDING_CONFIG_ON_DE2F_BEFORE_MS = Date.parse('2026-10-04T13:00:00
 
 /**
  * The truck: the network's title, the core versions 1-4 name with the config its rounds name - 68e2b3d6, FROZEN since its comments
- * were cleaned of names, ticket numbers and blwp (kanban #523): src/ is now the working copy of version 5's truck (a5c5766a, below),
+ * were cleaned of names, ticket numbers and the old project name: src/ is now the working copy of version 5's truck (a5c5766a, below),
  * and every round, series and page that names "the truck" (TRUCK_CORE_HASH, the page's default core) keeps naming 68e2b3d6.
  */
 export const TRUCK_68E2_HASH = '68e2b3d6757dc26a76f95eaf0b57799f4e965267ae70a2e79ce4228154acb589';
@@ -66,7 +66,7 @@ export const TRUCK = withAdapter({
   hash: TRUCK_68E2_HASH,
   url: new URL('../frozen/68e2b3d6/adapter.js', import.meta.url).href,
   root: new URL('../frozen/68e2b3d6/', import.meta.url).href,
-  // TWO CONFIGS ON ONE CORE (#23, Daniel 2026-10-04): the current one, v4 - one world per round, shared by its players -
+  // TWO CONFIGS ON ONE CORE (2026-10-04): the current one, v4 - one world per round, shared by its players -
   // which every series published from now names; and v3 (f51759b6), the per-player world the 10-06 series was published
   // on, kept installed so its rounds open and replay exactly as published.
   configs: new Map([[TRUCK_CURRENT_CONFIG, CURRENT_CONFIG], [TRUCK_V3_CONFIG, {}]]),
@@ -75,14 +75,14 @@ export const TRUCK = withAdapter({
 }, '../frozen/68e2b3d6/adapter.js');
 
 /**
- * THE TRUCK BEFORE C BECAME THE BED FILL AND T SANK FROM 20 S (Daniel 2026-10-04 08:54 and 09:17; accepted path A): core
+ * THE TRUCK BEFORE C BECAME THE BED FILL AND T SANK FROM 20 S (2026-10-04 08:54 and 09:17; accepted path A): core
  * 2069b4c2, kept INSTALLED beside the truck - every round published on it (the day's paid set, the late-join series, the
  * free rounds before the pair moved) is replayed by it, byte for byte the core those rounds were played on. Its source
  * is frozen in core/frozen/2069b4c2 and its hash is computed from those files here, never typed: a frozen tree that
  * drifted would name another core and be refused below.
  */
 /**
- * de2f263d KEPT INSTALLED BESIDE THE TRUCK (Daniel 2026-10-04, option 1: exposure weighted by heat makes a new core): the
+ * de2f263d KEPT INSTALLED BESIDE THE TRUCK (2026-10-04, option 1: exposure weighted by heat makes a new core): the
  * free rounds the pair opened on it from 08:23Z are replayed by it, frozen in core/frozen/de2f263d. It plays its own
  * config dbb49344 (v2), and the founding config only for a round made before the 13:00Z cut-over.
  */
@@ -99,7 +99,7 @@ export const TRUCK_DE2F = withAdapter({
 }, '../frozen/de2f263d/adapter.js');
 
 /**
- * 7e2123d1 KEPT INSTALLED BESIDE THE TRUCK (kanban #29, 2026-10-07: §4.11's objectives became the chart's HIGH, LOW and
+ * 7e2123d1 KEPT INSTALLED BESIDE THE TRUCK (2026-10-07: §4.11's objectives became the chart's HIGH, LOW and
  * OPEN, and the RIDGE cap went, in core 68e2b3d6): every round the seats published on 7e2123d1 is replayed by it, frozen in
  * core/frozen/7e2123d1. It plays the two configs the truck carried while it was the truck: v4 (one world per round) and the
  * per-player v3 (f51759b6) of the 10-06 series.
@@ -117,7 +117,7 @@ export const TRUCK_7E21 = withAdapter({
 }, '../frozen/7e2123d1/adapter.js');
 
 /**
- * f0cc7b7b, THE TRUCK THAT KNOWS THE LARGER TRUCK (kanban #369, the first in-game item of #365; Daniel 2026-10-15), INSTALLED BESIDE
+ * f0cc7b7b, THE TRUCK THAT KNOWS THE LARGER TRUCK (the first in-game item of; 2026-10-15), INSTALLED BESIDE
  * THE TRUCK: the same game with a run's own bed, drive acceleration and top speed, which a run takes when its entry plays with the
  * larger truck (its unlock, frozen/f0cc7b7b/items.js). Only manifest version 3 (plugin/nextblock-v3.js, protocol 10) names it, so a
  * round on it is a version-3 round; versions 1 and 2 and the truck above are exactly as they were. Kept like the cores before the
@@ -150,14 +150,14 @@ export const TRUCK_2069 = withAdapter({
 /** The truck's hashes as a round names them: its sim_wasm_hash and the config_hash of the rules it plays. */
 export const TRUCK_CORE_HASH = fromHex(TRUCK.hash);
 export const TRUCK_CONFIG_HASH = fromHex(TRUCK_CURRENT_CONFIG);
-// #23: the current config is v4 - one world per round - and the round openers (round-2of2.mjs, the testnet4 series writer)
+//: the current config is v4 - one world per round - and the round openers (round-2of2.mjs, the testnet4 series writer)
 // name it through TRUCK_CONFIG_HASH. The per-player config v3 (f51759b6), the 10-06 series' and every older round's, is
 // TRUCK_V3_CONFIG_HASH; the tests whose rounds carry a world secret of their own name it.
 export const TRUCK_V3_CONFIG_HASH = fromHex(TRUCK_V3_CONFIG);
 export const TRUCK_SHARED_CONFIG_HASH = TRUCK_CONFIG_HASH;
 
 /**
- * THE TRUCK BEFORE THE 82/90 HARD FORK (Daniel 2026-10-01: "Change the core, it's basically a hard fork"): the core every
+ * THE TRUCK BEFORE THE 82/90 HARD FORK (2026-10-01: "Change the core, it's basically a hard fork"): the core every
  * round before the fork names, d15c39bb..., ended every run at its own 10800 ticks. The core after it takes the run length
  * from the round and runs 10800 ticks hash for hash as the old one did (core/test/round-ends.test.js), so the old hash is
  * installed as this same core held to that one length: its rounds replay unchanged, and none of them names another.
@@ -171,7 +171,7 @@ export const TRUCK_BEFORE_FORK = withAdapter({ ...TRUCK_2069, name: `${TRUCK.nam
 
 
 /**
- * NEXTBLOCK'S OWN CHECK OF THE ROUND FIELDS ONLY IT READS (kanban #203: moved out of arena-protocol/src/contracts.js; the
+ * NEXTBLOCK'S OWN CHECK OF THE ROUND FIELDS ONLY IT READS (moved out of arena-protocol/src/contracts.js; the
  * contract layout is unchanged): a round whose exposure reference is 0 ignores exposure, and one whose time floor is not
  * below its ceiling has a degenerate time factor. The engine's contractWarnings appends these for a nextblock round.
  */
@@ -182,12 +182,12 @@ export function nextblockRoundWarnings(c) {
   return out;
 }
 
-/** 68e2b3d6 by its own name (kanban #523): the truck above - its files frozen/68e2b3d6, its bundles dist/blwp-core.js and blwp-replay-core.js. */
+/** 68e2b3d6 by its own name: the truck above - its files frozen/68e2b3d6, its bundles dist/blwp-core.js and blwp-replay-core.js. */
 export const TRUCK_68E2 = TRUCK;
 
 /**
- * THE TWO CORES VERSION 5 NAMES (kanban #523): 68e2b3d6 and f0cc7b7b with their comments cleaned of names, ticket numbers
- * and blwp - the same code, file for file (tools/ast-same.mjs), so the same game: a5c5766a the truck, 0847c99f the truck that
+ * THE TWO CORES VERSION 5 NAMES: 68e2b3d6 and f0cc7b7b with their comments cleaned of names, ticket numbers
+ * and the old project name - the same code, file for file (tools/ast-same.mjs), so the same game: a5c5766a the truck, 0847c99f the truck that
  * knows the larger truck. Frozen like the cores before them, their hashes computed from their files; each with its own
  * browser bundle and replay bundle (dist/core-<hash>.js, dist/replay-core-<hash>.js), whose global is NEXTBLOCK_CORE.
  */
@@ -217,9 +217,9 @@ export const TRUCK_0847 = withAdapter({
 /** Every core nextblock's rounds are replayed by, by hash: 68e2b3d6 (the truck versions 1-4 name) and the four kept installed beside it. */
 export const NEXTBLOCK_CORES = new Map([[TRUCK_68E2_HASH, TRUCK_68E2], [TRUCK_7E21_HASH, TRUCK_7E21], [DE2F_HASH, TRUCK_DE2F],
   [TRUCK_2069_HASH, TRUCK_2069], [TRUCK_BEFORE_FORK_HASH, TRUCK_BEFORE_FORK]]);
-/** THE CORES MANIFEST VERSION 3 NAMES (kanban #369): every one above, and the truck that knows the larger truck. */
+/** THE CORES MANIFEST VERSION 3 NAMES: every one above, and the truck that knows the larger truck. */
 export const NEXTBLOCK_CORES_V3 = new Map([...NEXTBLOCK_CORES, [TRUCK_F0CC_HASH, TRUCK_F0CC]]);
-/** THE CORES MANIFEST VERSION 5 NAMES (kanban #523): only the two cleaned ones - a version-5 round plays on one of them. */
+/** THE CORES MANIFEST VERSION 5 NAMES: only the two cleaned ones - a version-5 round plays on one of them. */
 export const NEXTBLOCK_CORES_V5 = new Map([[TRUCK_A5C5_HASH, TRUCK_A5C5], [TRUCK_0847_HASH, TRUCK_0847]]);
 
 /**
@@ -249,7 +249,7 @@ export function nextblockManifestBody({ clients, gameDevPubkey, gameDonationSetI
   };
 }
 
-/** WHAT NEXTBLOCK SELLS from manifest version 3 (kanban #369, the first in-game item of #365; Daniel 2026-10-15: "a larger truck
+/** WHAT NEXTBLOCK SELLS from manifest version 3 (the first in-game item of; 2026-10-15: "a larger truck
  * for 500 satoshis"): the larger truck, by the unlock core f0cc7b7b knows - frozen/f0cc7b7b/items.js LARGE_TRUCK_UNLOCK, written out
  * here because the registration evaluates no core module (test/large-truck.test.js holds the two equal). */
 export const LARGE_TRUCK_ITEM_UNLOCK = '10dec674eb2f698400bb775c508e727d9c15734a6e7056889d12bb0ebab54d69';

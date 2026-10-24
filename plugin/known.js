@@ -1,4 +1,4 @@
-// WHAT A CLIENT LISTS OF NEXTBLOCK (kanban #203): its signed manifest's bytes and the configs it plays as one world per
+// WHAT A CLIENT LISTS OF NEXTBLOCK: its signed manifest's bytes and the configs it plays as one world per
 // round - read by the engine's generator, arena-protocol/tools/known-games.js, given this file as an argument; the engine
 // imports no game:
 //
