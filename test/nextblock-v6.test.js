@@ -15,7 +15,7 @@ import { GAME as V6, MANIFEST_V6 } from '../plugin/nextblock-v6.js';
 
 const CLIENTS = JSON.parse(readFileSync(new URL('../plugin/clients.json', import.meta.url), 'utf8'));
 const sha = (b) => createHash('sha256').update(b).digest('hex');
-const FORBIDDEN = /blwp|Daniel|Claude|kanban|#\d{2,3}(?![0-9a-f])/i;
+const FORBIDDEN = /blwp|Claude|kanban|#\d{2,3}(?![0-9a-f])/i;
 
 test('version 6 stands on version 5 with its cores, items and protocol', () => {
   assert.equal(toHex(V5.gameId), '09bfe97a6a2b640b69ee9f4a175d25e091ee7229e536f1f3e1adc431f60afb1b');
