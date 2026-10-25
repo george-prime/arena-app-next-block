@@ -8,6 +8,7 @@
     "plugin/nextblock-v2.js",
     "plugin/nextblock-v3.js",
     "plugin/nextblock-v4.js",
-    "plugin/nextblock-v5.js"
+    "plugin/nextblock-v5.js",
+    "plugin/nextblock-v6.js"
   ]
 }
