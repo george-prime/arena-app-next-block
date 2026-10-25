@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Bitcoin-Arena-1.0
 // Copyright (c) 2026 The Bitcoin Arena authors. See LICENSE.
-// NEXT BLOCK PUBLISHES ITS OWN WEBGL CLIENT (kanban #569, Daniel 2026-10-21: "The app builds and publishes its own WebGL build. The Arena
+// NEXT BLOCK PUBLISHES ITS OWN WEBGL CLIENT (kanban #569, 2026-10-21: "The app builds and publishes its own WebGL build. The Arena
 // page loads that build like any other app client, hash-pinned"). From the two Unity outputs of one commit - DXT for desktops, ASTC for
 // phones - one client folder: Build/ (the loader, the framework, the wasm, the DXT data and the ASTC data beside it as <name>-astc.data),
 // ServerData/WebGL (the streamed models of both), StreamingAssets and StreamingAssets-astc (each one's Addressables catalog), textures.json
