@@ -19,7 +19,7 @@
     "publish-webgl": "node tools/publish-webgl.mjs"
   },
   "dependencies": {
-    "arena-sdk": "github:george-prime/arena-sdk#v0.2.0"
+    "arena-sdk": "github:george-prime/arena-sdk#v0.3.0"
   },
   "devDependencies": {
     "acorn": "8.14.0"
