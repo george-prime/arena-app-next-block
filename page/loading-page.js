@@ -23,8 +23,14 @@
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   function bootPanel() {
     if (!boot || !title || document.documentElement.classList.contains('other-game')) return;
-    const w = window.innerWidth, h = window.innerHeight, min = Math.min(w, h);
-    const pw = Math.min(w * 0.86, 900), ph = Math.min(h * 0.88, 760), px = (w - pw) / 2, py = (h - ph) / 2;
+    // BETWEEN THE ARENA'S BAR AND ITS FOOT (kanban #789, Daniel 2026-10-29 playtest on an iPhone: "der Footer schneidet in den Rahmen"): the
+    // page's bar (to 40 px under the safe area) and foot (30 px over it) are fixed over this screen, as over Unity's menu, whose canvas
+    // the page ends between them (index.html); the panel is measured in that room, as Unity measures it in its canvas
+    const inset = (side) => { const p = document.createElement('div'); p.style.cssText = `position:fixed;visibility:hidden;height:env(safe-area-inset-${side},0px)`;
+      document.body.appendChild(p); const v = p.getBoundingClientRect().height; p.remove(); return v; };
+    const top = 40 + inset('top'), bottom = 30 + inset('bottom');
+    const w = window.innerWidth, h = Math.max(200, window.innerHeight - top - bottom), min = Math.min(w, h);
+    const pw = Math.min(w * 0.86, 900), ph = Math.min(h * 0.88, 760), px = (w - pw) / 2, py = top + (h - ph) / 2;
     const hh = clamp(ph * 0.13, 44, 96), pad = pw * 0.07, padV = Math.min(pad, ph * 0.07);
     const sub = Math.round(clamp(min * 0.028, 14, 24));
     let tf = Math.round(clamp(min * 0.070, 30, 68)), mark = 0, gap = 0;
@@ -43,7 +49,7 @@
     const portrait = h > w, howtoW = Math.max(120, Math.min(pw - pad * 2, portrait ? roomH / 0.9 : roomH * 6.25));
     const set = { '--hw': howtoW, '--gap': roomH < 260 ? 8 : 14, '--px': px, '--py': py, '--pw': pw, '--ph': ph, '--hh': hh, '--tf': tf, '--tm': mark, '--tg': gap, '--ix': px + pad, '--iw': pw - pad * 2,
       '--ir': w - (px + pw - pad), '--by': by, '--bh': bh, '--bf': Math.max(10, Math.round(sub * 0.8)), '--ct': by + bh + ph * 0.02,
-      '--cb': h - (py + ph) + padV };
+      '--cb': window.innerHeight - (py + ph) + padV };
     for (const k in set) boot.style.setProperty(k, set[k].toFixed(1) + 'px');
     boot.classList.add('paneled');
   }
