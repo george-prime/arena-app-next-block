@@ -45,7 +45,6 @@ body.arena-clean #arena-next { display: none !important; }
 #title span { color: #f7931a; }               /* the one bitcoin orange */
 #title { display: flex; align-items: center; gap: 0.45em; }
 #logo { width: 1.5em; height: 1.5em; flex: none; }
-#sub { color: #8b949e; font-size: 14px; margin-top: -14px; }
 /* THE GAME'S OWN PANEL, ALREADY ON THE LOADING SCREEN (2026-10-17: "the header slightly jumps between the
    screens 'loading a game' and 'the game' ... make it consistent"). Measured on UI 188: the loading title sat unframed ~1,100 px
    wide; Unity's lobby (SplashScreen.Measure) draws it in a gold head of a panel min(86 % w, 900) x min(88 % h, 760) - the
@@ -56,15 +55,15 @@ body.arena-clean #arena-next { display: none !important; }
 html:not(.other-game) #boot.paneled > #boot-panel { display: block; position: absolute; left: var(--px); top: var(--py); width: var(--pw); height: var(--ph);
   box-sizing: border-box; border: 2px solid rgba(255, 214, 79, 0.85); background: linear-gradient(#1a1d26f0, #0e0f13f0);
   box-shadow: 0 0 0 1px rgba(255, 214, 79, 0.12), 0 0 6px rgba(255, 214, 79, 0.34); pointer-events: none; z-index: -1; }   /* under the words, over #boot's ground */
-#boot-panel .head { position: absolute; left: -2px; right: -2px; top: -2px; height: var(--hh);
+/* THE HEAD INSIDE THE FRAME (kanban #789, Daniel 2026-10-29 playtest: "der Header schneidet den Rahmen"): it sat 2 px over the gold border
+   on three sides, so the frame stopped at the head and only its corners showed; inside it, the border runs round the whole panel */
+#boot-panel .head { position: absolute; left: 0; right: 0; top: 0; height: var(--hh);
   background: linear-gradient(#2b2412fa, #12110dfa); border-bottom: 3px solid #ffd64f; box-sizing: border-box; }
 html:not(.other-game) #boot.paneled > #title { position: absolute; left: var(--px); top: var(--py); width: var(--pw); height: var(--hh);
   justify-content: center; gap: var(--tg); font-size: var(--tf); line-height: 1; letter-spacing: 0; color: #ffd64f; text-transform: uppercase;
   text-shadow: 3px 4px 0 rgba(0, 0, 0, 0.6); z-index: 1; margin: 0; }
 html:not(.other-game) #boot.paneled > #title span { color: inherit; }
 html:not(.other-game) #boot.paneled > #title #logo { width: var(--tm); height: var(--tm); }
-html:not(.other-game) #boot.paneled > #sub { position: absolute; left: var(--ix); top: var(--by); width: var(--iw); height: var(--bh); margin: 0;
-  display: flex; align-items: center; justify-content: flex-end; font-size: var(--bf); color: rgba(255, 255, 255, 0.5); z-index: 1; }
 html:not(.other-game) #boot.paneled { padding: var(--ct) var(--ir) var(--cb) var(--ix); justify-content: center; }
 html:not(.other-game) #boot.paneled #track { width: min(440px, var(--iw)); }
 html:not(.other-game) #boot.paneled #howto { --h: min(calc((min(var(--iw), var(--hw)) - 18px) / 6.248), 30vh); }

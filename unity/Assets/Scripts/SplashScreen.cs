@@ -526,7 +526,7 @@ public class SplashScreen : MonoBehaviour
     /// </summary>
     public struct Frame
     {
-        public Rect panel, head, copy, hint, play, spectate, build;
+        public Rect panel, head, copy, hint, play, spectate;
         public float pad;
     }
 
@@ -563,21 +563,14 @@ public class SplashScreen : MonoBehaviour
         float hintHigh = subFont * 1.5f;
         var hint = new Rect(panel.x + pad, row - gap - hintHigh, inner, hintHigh);
 
-        // WHICH BUILD THIS IS, on its own line under the title bar.
-        //
-        // A row of its own rather than tucked into a corner of another one:
-        // twice in one session a measured fix "changed nothing on the phone"
-        // and both times the page was serving an older build than the one
-        // being argued about. It is only useful if it cannot be drawn over.
-        var build = new Rect(panel.x + pad, head.yMax + ph * 0.008f,
-                             inner, Mathf.Max(12f, subFont * 1.3f));
-
-        float top = build.yMax + ph * 0.02f;
+        // NO BUILD ROW UNDER THE TITLE BAR (kanban #789, Daniel 2026-10-29 playtest: "Entferne Build 0.0.xx, das ist statisch"):
+        // the page names the release itself (its footer's UI number), so the text starts right under the bar.
+        float top = head.yMax + ph * 0.02f;
         var copy = new Rect(panel.x + pad, top, inner,
                             Mathf.Max(0f, hint.y - padV * 0.25f - top));
 
         return new Frame { panel = panel, head = head, copy = copy, hint = hint,
-                           play = play, spectate = spectate, pad = pad, build = build };
+                           play = play, spectate = spectate, pad = pad };
     }
 
     void OnGUI()
@@ -628,7 +621,6 @@ public class SplashScreen : MonoBehaviour
 
         PanelSkin.Glow(panel, PanelSkin.Gold, 6, 0.34f);
         PanelSkin.Body(panel);
-        PanelSkin.Border(panel, new Color(PanelSkin.Gold.r, PanelSkin.Gold.g, PanelSkin.Gold.b, 0.85f));
         PanelSkin.Scan(panel, PanelSkin.Cyan, 5.5f);
 
         float tape = Mathf.Clamp(pw * 0.011f, 9f, 17f);
@@ -640,6 +632,9 @@ public class SplashScreen : MonoBehaviour
         PanelSkin.Gradient(head, new Color(0.17f, 0.14f, 0.07f, 0.98f),
                                  new Color(0.07f, 0.065f, 0.05f, 0.98f));
         PanelSkin.Rule(new Rect(head.x, head.yMax - 3f, head.width, 3f), PanelSkin.Gold);
+        // THE FRAME OVER THE HEAD (kanban #789, Daniel 2026-10-29 playtest: "der Header schneidet den Rahmen"): drawn before it, the
+        // border was covered by the head's gradient on three sides and only its corners showed; drawn last, it runs round the panel
+        PanelSkin.Border(panel, new Color(PanelSkin.Gold.r, PanelSkin.Gold.g, PanelSkin.Gold.b, 0.85f));
 
         // THE NAME ON ONE LINE WITH THE GAME'S MARK BESIDE IT: "TICK TOCK, NEXT BLOCK" is longer than the old
         // title and wrapped to two lines on a phone, under the backup banner. The icon and the name are centred together in
@@ -664,14 +659,6 @@ public class SplashScreen : MonoBehaviour
         if (mark > 0f)
             NextBlockMark.DrawIcon(new Rect(name.center.x - need.x * 0.5f - gap - mark, head.center.y - mark * 0.5f, mark, mark));
 
-        // The build, right-aligned on its own row under the title bar.
-        var stamp = new GUIStyle(_sub)
-        {
-            alignment = TextAnchor.MiddleRight,
-            fontSize = Mathf.Max(10, Mathf.RoundToInt(_sub.fontSize * 0.8f)),
-        };
-        stamp.normal.textColor = new Color(1f, 1f, 1f, 0.5f);
-        GUI.Label(f.build, $"build {BuildStamp.Current}", stamp);
 
         if (lobby) Lobby(f.copy); else Copy(f.copy.width, true, f.copy.x, f.copy.y);
         Buttons(f);
