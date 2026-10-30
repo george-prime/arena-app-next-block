@@ -10,6 +10,9 @@
    take the room left of the button and wrap inside it; the button keeps its own width. */
 #arena-next-say { flex: 1 1 auto; min-width: 0; white-space: normal; overflow-wrap: anywhere; }
 #arena-next { width: max-content; }
+/* "SECURING YOUR RUN" UNDER THE ARENA'S BAR (Daniel 2026-10-30 playtest: at the foot it lay on "exit game", in landscape the box sits at the same bottom edge): the top of the
+   screen is free of the box and of the touch pads */
+#arena-securing { top: calc(49px + env(safe-area-inset-top, 0px)); bottom: auto !important; }
 /* NEVER ONE LETTER A LINE (measured 2026-10-18 on a 390 px phone: beside "Buy add-ons", "Donate" and "exit game"
    the words had no room left and stood one letter per line down the box): the words keep at least 10em, and the buttons
    that do not fit beside them wrap to a row of their own; on a phone the words take the first row whole. */
