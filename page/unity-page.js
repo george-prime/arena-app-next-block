@@ -291,7 +291,7 @@ const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobb
     // THE RUN IS SAFE BEFORE IT IS CELEBRATED (§13A "Client duty"): "on delivery, the reference client uploads its
     // complete transcript to at least two committee nodes ... before showing the victory screen. This is what makes the veto work for
     // a player who closes the browser immediately afterwards." The batches stream live, so this asks the nodes what they hold
-    // (secureTranscript) and, until two hold the whole run, holds a line over the result card: "keep this tab open".
+    // (secureTranscript) and, until as many as settle the round hold the whole run, holds a line over the result card: "keep this tab open".
     // THE CHAIN CHECKED OUTSIDE THE NETWORK (§5A.4): a paid join's census and tip are spot-checked against a block explorer -
     // mempool.space for testnet4 rounds by default; `arena.explorer` in this browser's storage names another Esplora base, or `off`
     window.ARENA_EXPLORER_FOR = (round) => {
@@ -315,11 +315,11 @@ const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobb
       for (let i = 0; i < tries; i++) {
         got = await ARENACLIENT.secureTranscript({ roundId: ARENACLIENT.fromHex(run.roundHex), entryId: ARENACLIENT.fromHex(run.entryHex), nodes: run.nodes || [], finalTick });
         if (got.safe) { const safe = 'Your run is safe: ' + got.holders.length + ' signer nodes hold all of it'; said(safe, 'safe'); setTimeout(() => said(safe, 'safe', true), 4000); break; }
-        said('Securing your run: ' + got.holders.length + ' of 2 signer nodes hold all of it … keep this tab open', 'wait');
+        said('Securing your run: ' + got.holders.length + ' of ' + got.need + ' signer nodes hold all of it … keep this tab open', 'wait');
         await new Promise((r) => setTimeout(r, everyMs));
       }
       window.ARENA_RUN_SAFE = got;
-      if (got && !got.safe) said('Your run is not yet held by two signer nodes - keep this tab open (' + got.why + ')', 'bad');
+      if (got && !got.safe) said('Your run is not yet held by ' + got.need + ' signer nodes - keep this tab open (' + got.why + ')', 'bad');
       return got;
     };
     window.ARENA_RUN_OVER = (word, run) => {

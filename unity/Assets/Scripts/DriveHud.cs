@@ -1077,7 +1077,12 @@ public class DriveHud : MonoBehaviour
                 var tag = new GUIStyle(line) { alignment = TextAnchor.MiddleRight, fontStyle = FontStyle.Bold,
                     fontSize = Mathf.Max(10, Mathf.RoundToInt(line.fontSize * 0.75f)) };
                 tag.normal.textColor = new Color(1f, 0.86f, 0.35f, 0.7f * k);
-                GUI.Label(new Rect(icon.x - 220f, icon.y, 214f, s), NextBlockMark.Name, tag);
+                // ON ONE LINE OR NOT AT ALL (Daniel 2026-10-30: "Der Titel rechts ist auch kaputt"): the line style wraps, so the name broke in two and its rect, one
+                // icon high, cut both lines
+                tag.wordWrap = false;
+                while (tag.fontSize > 10 && tag.CalcSize(new GUIContent(NextBlockMark.Name)).x > 214f) tag.fontSize--;
+                if (tag.CalcSize(new GUIContent(NextBlockMark.Name)).x <= 214f)
+                    GUI.Label(new Rect(icon.x - 220f, icon.y, 214f, s), NextBlockMark.Name, tag);
             }
         }
 
