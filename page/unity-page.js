@@ -382,7 +382,7 @@ const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobb
       // 90 s slot. Until the next round is listed the box says it is joining it, with no number; once listed, it counts to
       // that round's own start - the number its lobby row shows.
       const runOverAt = Date.now();
-      const next = window.ARENA_NEXT = { state: 'looking', runOverAt, startMs: NaN };
+      const next = window.ARENA_NEXT = { state: 'looking', runOverAt, startMs: NaN, playedStartMs: Number(played.startTimeMs) };
       // LOOKED FOR UNTIL IT IS LISTED: a series lists round i+1 long before; a launcher that opens its next round later
       // (the Daily: about a minute before the current round's entry closes) lists it later - measured 65 s after a run.
       // Given up only when the player joins something else from the lobby, or after 10 minutes.
@@ -437,7 +437,12 @@ const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobb
       if (waiting) {
         v = ARENACLIENT.nextRoundView({ runOverMs: n.runOverAt, nextStartMs: n.startMs, nowMs: Date.now() });
         // not listed yet: the words without a number, beside exit game - never a number that is not the round's start
-        if (n.state === 'looking' && v.show === 'lobby') v = { show: 'countdown', line: 'joining next round', exit: ARENACLIENT.EXIT_GAME };
+        // (kanban #827, Daniel 2026-10-31: "Joining next round .. in X seconds fehlt"): the rounds stand on a 90 s grid from the one just played, so its next step is a round's start
+        if (n.state === 'looking' && v.show === 'lobby') {
+          const step = 90000, from = n.playedStartMs;
+          v = Number.isFinite(from) ? ARENACLIENT.nextRoundView({ runOverMs: n.runOverAt, nextStartMs: from + Math.ceil((Date.now() - from + 1) / step) * step, nowMs: Date.now() })
+            : { show: 'countdown', line: 'joining next round', exit: ARENACLIENT.EXIT_GAME };
+        }
         // AT ONCE, beside the ending Unity keeps up (COUNTDOWN-NOW-2209): no waiting for the card
       }
       if (n && n.state === 'joining' && Date.now() >= n.startMs) n.state = 'started';

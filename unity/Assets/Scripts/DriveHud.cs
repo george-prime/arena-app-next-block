@@ -797,15 +797,15 @@ public class DriveHud : MonoBehaviour
         // and centred put "BLOCK 965,829 · 2:06" straight across the practice
         // switch on a phone.
         var head = HeadlineBox(w, h);
-        string clock = block.StartsIn ? $"ROUND STARTS IN   {left / 60}:{left % 60:00}" : $"BLOCK {block.Height:N0}   ·   {left / 60}:{left % 60:00}";
+        string clock = block.StartsIn ? $"ROUND STARTS IN   {left / 60}:{left % 60:00}" : $"TIME LEFT   {left / 60}:{left % 60:00}";
         int size = style.fontSize;
         if (FitLine(style, clock, head.width, 12))
             Shadowed(new Rect(head.x, y, head.width, style.fontSize * 1.35f), clock, style, colour);
 
         var sub = new GUIStyle(_small) { alignment = TextAnchor.UpperCenter };
         string words = block.StartsIn ? "the same clock on every device - the round's own start"
-                     : late ? "DELIVER BEFORE THE BLOCK IS MINED — OR LOSE THE LOAD"
-                            : "the block is the round · arrive before it closes";
+                     : late ? "DELIVER BEFORE THE CLOCK RUNS OUT — OR LOSE THE LOAD"
+                            : "arrive before the clock runs out";
         if (FitLine(sub, words, head.width, 10))
             Shadowed(new Rect(head.x, y + size * 1.2f, head.width, sub.fontSize * 1.6f), words, sub,
                      new Color(1f, 1f, 1f, late ? 0.95f : 0.6f));
@@ -1359,7 +1359,7 @@ public class DriveHud : MonoBehaviour
         PanelSkin.Corners(box, new Color(1f, 0.86f, 0.35f, 0.8f), 2f);
 
         float y = pad + lh * BlockRows[0];
-        Shadowed(new Rect(pad * 1.5f, y, bw, lh), $"BLOCK #{block.Height}", head,
+        Shadowed(new Rect(pad * 1.5f, y, bw, lh), "THIS RUN", head,
                  new Color(1f, 0.86f, 0.35f));
         y += lh * BlockRows[1];
 
@@ -1380,7 +1380,7 @@ public class DriveHud : MonoBehaviour
                  new Color(1f, 1f, 1f, 0.85f));
         y += lh * BlockRows[3];
         Shadowed(new Rect(pad * 1.5f, y, bw, lh),
-                 $"in this block: {LoadoutPanel.BtcLabel(block.PendingBtc)}",
+                 $"on the truck: {LoadoutPanel.BtcLabel(block.PendingBtc)}",
                  line, Up);
         // `BlockRows[4]` is the pending line's own height - it is counted in
         // the content total but it is not an advance, because the gap to the
@@ -1646,7 +1646,7 @@ public class DriveHud : MonoBehaviour
     /// under another, none crossing the next.
     /// </summary>
     public static float ArrivalMidFont(float head) => Mathf.RoundToInt(head * 0.82f);
-    public static float ArrivalLineFont(float head) => Mathf.RoundToInt(head * 0.48f);
+    public static float ArrivalLineFont(float head) => Mathf.RoundToInt(head * 0.62f);   // kanban #827: 0.48 read too small under the headline
     public static float RunStoppedFont(int w, int h) => Mathf.RoundToInt(Mathf.Min(w, h) * 0.030f);
 
     /// <summary>COPY GAME REPLAY (2026-09-25 18:39): the control's label, exactly.</summary>
