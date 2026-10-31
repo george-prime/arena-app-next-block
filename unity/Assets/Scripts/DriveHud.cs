@@ -1646,7 +1646,7 @@ public class DriveHud : MonoBehaviour
     /// under another, none crossing the next.
     /// </summary>
     public static float ArrivalMidFont(float head) => Mathf.RoundToInt(head * 0.82f);
-    public static float ArrivalLineFont(float head) => Mathf.RoundToInt(head * 0.62f);   // kanban #827: 0.48 read too small under the headline
+    public static float ArrivalLineFont(float head) => Mathf.RoundToInt(head * 0.56f);   // kanban #827: 0.48 read too small; 0.62 ran into the next-round box on a small phone
     public static float RunStoppedFont(int w, int h) => Mathf.RoundToInt(Mathf.Min(w, h) * 0.030f);
 
     /// <summary>COPY GAME REPLAY (2026-09-25 18:39): the control's label, exactly.</summary>
