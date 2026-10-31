@@ -95,6 +95,8 @@ namespace Arena
         public int failed;
         /// <summary>The page is taking the player to the next round (SPECTATE-2158): no lobby until exit game or its start.</summary>
         public bool continuing;
+        /// <summary>"Exit game" was pressed (kanban #827).</summary>
+        public bool exited;
         /// <summary>
         /// The top of the page's "joining next round · exit game" box while it is up, a fraction of the game canvas from its
         /// top, else 0: the result card, its fold control and a wreck's summary end above it.

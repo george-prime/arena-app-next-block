@@ -848,7 +848,8 @@ public class DriveHud : MonoBehaviour
     public static float ArrivalHoldFor(bool continuing) => continuing ? float.MaxValue : ArrivalHoldSeconds;
     // AND WHILE THIS RUN'S RESULT IS NOT SIGNED YET (2026-10-04, option 1): the seats sign at the round's close, so with
     // continue off the card - and the lobby behind it (SplashScreen.LobbyMayCover) - waits for the page's `hold` to clear.
-    float ArrivalHoldNow => ArrivalHoldFor(SplashScreen.Continuing || ResultHolding);
+    // "EXIT GAME" ENDS IT AT ONCE (kanban #827, Daniel 2026-10-31: "\"Exit\" geht nicht zurück zur Lobby").
+    float ArrivalHoldNow => SplashScreen.Exited ? 0f : ArrivalHoldFor(SplashScreen.Continuing || ResultHolding);
 
     /// <summary>The result summary the page read says hold the card: this run is not signed yet, its round's close + 10 s not passed.</summary>
     public bool ResultHolding { get; private set; }

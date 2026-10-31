@@ -425,6 +425,9 @@ const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobb
           // already locked refunds by the lock's own expiry (§23.1) - nothing new is sent. PLAY from the lobby continues again.
           window.ARENA_CONTINUE = false;
           cancelNextJoin('exited');
+          // AND THE CARD LETS GO (kanban #827, Daniel 2026-10-31: "\"Exit\" geht nicht zurück zur Lobby"): the hold to the round's close + 20 s is for a player who stays; the result is in the lobby's rows
+          const kept = window.ARENA_RESULT;
+          if (kept) { kept.holdUntil = 0; writeResultSummary(kept); }
           console.log('[arena] exit game: no next round');
           nbNext = { ...nbNext, show: false }; nbDrawNext();
         } });
@@ -631,6 +634,8 @@ const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobb
         // "exit game" or that round's start. Unity shows no lobby meanwhile - the result card, or WASTED, stays.
         continuing: (() => { const n = window.ARENA_NEXT;
           return !!n && window.ARENA_CONTINUE !== false && (n.state === 'looking' || n.state === 'joining'); })(),
+        // "EXIT GAME" PRESSED (kanban #827): the card goes at once, not at its 8 s
+        exited: window.ARENA_CONTINUE === false,
         // AND WHERE ITS BOX STARTS, for the result card to end above it
         nextBoxTop: typeof window.ARENA_NEXT_BOX_TOP === 'function' ? window.ARENA_NEXT_BOX_TOP() : 0,
         // A WITHDRAWAL AVAILABLE (2026-09-14), for the lobby to say so.
