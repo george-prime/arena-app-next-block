@@ -214,6 +214,25 @@ export const TRUCK_0847 = withAdapter({
   replayFile: new URL('../dist/replay-core-0847c99f.js', import.meta.url),
 }, '../frozen/0847c99f/adapter.js');
 
+/**
+ * 8cbc74b2, A SHARED WORLD'S PLAYERS AT DIFFERENT DOORS (the owner 2026-10-31: two trucks of one round must not start at one door, and
+ * must start near enough to see each other): 0847c99f, the core the rounds run on, and a run's `slot` (start option, arena-protocol
+ * seed.js worldSlot): its door among the 12 around the seed's own. A run with no slot is 0847c99f hash for hash (test/slot.test.js).
+ * Frozen like the cores before it; src/ stays a5c5766a, as f0cc7b7b and 0847c99f left it. Only manifest version 7 names it
+ * (tools/sign-manifest-v7.mjs).
+ */
+export const TRUCK_8CBC_HASH = '8cbc74b27bee78727fa395fcc5e5181beb4072f837adbee0e9ea278ff427d387';
+const FROZEN_548B = fileURLToPath(new URL('../frozen/8cbc74b2', import.meta.url));
+if (coreHashHex(FROZEN_548B) !== TRUCK_8CBC_HASH) throw new Error(`core/frozen/8cbc74b2 hashes to ${coreHashHex(FROZEN_548B)}, not the core it keeps`);
+export const TRUCK_8CBC = withAdapter({
+  name: `${TRUCK_NAME} (8cbc74b2, a door per player)`,
+  hash: TRUCK_8CBC_HASH,
+  url: new URL('../frozen/8cbc74b2/adapter.js', import.meta.url).href,
+  root: new URL('../frozen/8cbc74b2/', import.meta.url).href,
+  configs: new Map([[TRUCK_CURRENT_CONFIG, CURRENT_CONFIG], [TRUCK_V3_CONFIG, {}]]),
+  replayFile: new URL('../dist/replay-core-8cbc74b2.js', import.meta.url),
+}, '../frozen/8cbc74b2/adapter.js');
+
 /** Every core nextblock's rounds are replayed by, by hash: 68e2b3d6 (the truck versions 1-4 name) and the four kept installed beside it. */
 export const NEXTBLOCK_CORES = new Map([[TRUCK_68E2_HASH, TRUCK_68E2], [TRUCK_7E21_HASH, TRUCK_7E21], [DE2F_HASH, TRUCK_DE2F],
   [TRUCK_2069_HASH, TRUCK_2069], [TRUCK_BEFORE_FORK_HASH, TRUCK_BEFORE_FORK]]);
@@ -221,6 +240,8 @@ export const NEXTBLOCK_CORES = new Map([[TRUCK_68E2_HASH, TRUCK_68E2], [TRUCK_7E
 export const NEXTBLOCK_CORES_V3 = new Map([...NEXTBLOCK_CORES, [TRUCK_F0CC_HASH, TRUCK_F0CC]]);
 /** THE CORES MANIFEST VERSION 5 NAMES: only the two cleaned ones - a version-5 round plays on one of them. */
 export const NEXTBLOCK_CORES_V5 = new Map([[TRUCK_A5C5_HASH, TRUCK_A5C5], [TRUCK_0847_HASH, TRUCK_0847]]);
+/** THE CORE MANIFEST VERSION 7 NAMES: rounds of versions 1-6 stay on their versions' cores. */
+export const NEXTBLOCK_CORES_V7 = new Map([[TRUCK_8CBC_HASH, TRUCK_8CBC]]);
 
 /**
  * NEXTBLOCK'S MANIFEST BODY, from this registration (§0A.3): every core above with the configs it plays, a run of at

@@ -30,7 +30,7 @@ mergeInto(LibraryManager.library, {
       console.error('[arena] core bundle not loaded - check the WebGL template');
       return 0;
     }
-    Module.arenaCore = { st: BLWP.init(arenaWorldSeed(seed)), core: BLWP };
+    Module.arenaCore = { st: BLWP.init(arenaWorldSeed(seed), arenaWithSlot({})), core: BLWP };
     return 1;
   },
 
@@ -322,15 +322,23 @@ mergeInto(LibraryManager.library, {
     if (u.length) opts.items = u.slice();
     return opts;
   },
+  // WHERE IN A SHARED WORLD THIS PLAYER STARTS (kanban #828): the entry's place, the one the signer nodes replay it from. Every
+  // call that puts the core in the round's world carries it, as every one carries arenaWorldSeed: the place is that seed's other
+  // half. Once the bridge knows the round's, it is the place, whoever asks and whenever. An older core ignores it.
+  $arenaWithSlot: function (opts) {
+    var n = Module.arenaNet;
+    if (n && typeof n.slot === 'number') opts.slot = n.slot;
+    return opts;
+  },
   ArenaSubmitLoad__deps: ['$arenaRoomOf'],
   ArenaBedFill__deps: ['$arenaRoomOf'],
-  ArenaInit__deps: ['$arenaWorldSeed'],
-  ArenaRestart__deps: ['$arenaWorldSeed'],
+  ArenaInit__deps: ['$arenaWorldSeed', '$arenaWithSlot'],
+  ArenaRestart__deps: ['$arenaWorldSeed', '$arenaWithSlot'],
 
   ArenaRestart: function (seed) {
     var b = Module.arenaCore;
     if (!b) return 0;
-    b.st = b.core.restart(b.st, arenaWorldSeed(seed));
+    b.st = b.core.restart(b.st, arenaWorldSeed(seed), arenaWithSlot({}));
     return 1;
   },
 
@@ -549,13 +557,19 @@ mergeInto(LibraryManager.library, {
       if (kept && kept.pkcs8 && kept.raw)
         return crypto.subtle.importKey('pkcs8', ARENACLIENT.fromHex(kept.pkcs8), { name: 'Ed25519' }, false, ['sign'])
           .then(function (privateKey) { console.log('[arena] the session key of this round kept from before the reload'); return { privateKey: privateKey, raw: ARENACLIENT.fromHex(kept.raw) }; });
-      return crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']).then(function (pair) {
-        return Promise.all([crypto.subtle.exportKey('pkcs8', pair.privateKey), crypto.subtle.exportKey('raw', pair.publicKey)])
-          .then(function (x) {
-            var raw = new Uint8Array(x[1]);
-            try { if (slot && store) store.setItem(slot, JSON.stringify({ pkcs8: ARENACLIENT.toHex(new Uint8Array(x[0])), raw: ARENACLIENT.toHex(raw) })); } catch (e) { /* kept for this page only */ }
-            return { privateKey: pair.privateKey, raw: raw };
-          });
+      var makeKey = function () {
+        return crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']).then(function (pair) {
+          return Promise.all([crypto.subtle.exportKey('pkcs8', pair.privateKey), crypto.subtle.exportKey('raw', pair.publicKey)])
+            .then(function (x) { return { privateKey: pair.privateKey, raw: new Uint8Array(x[1]), pkcs8: new Uint8Array(x[0]) }; });
+        });
+      };
+      // A PLACE NOBODY IN THE ROUND HOLDS (kanban #828): the id this key makes picks the door, so a shared world's entry draws
+      // its key until that door is not one the seats list as taken. Only a new key: a kept one is an entry already sent.
+      return ARENACLIENT.keyOnFreeSlot({ makeKey: makeKey,
+        entry: (typeof ARENA_ENTRY !== 'undefined') ? ARENA_ENTRY : null, contract: (typeof ARENA_ROUND !== 'undefined') ? ARENA_ROUND : null,
+        nodes: (typeof ARENA_NODES !== 'undefined') ? ARENA_NODES : null }).then(function (k) {
+        try { if (slot && store) store.setItem(slot, JSON.stringify({ pkcs8: ARENACLIENT.toHex(k.pkcs8), raw: ARENACLIENT.toHex(k.raw) })); } catch (e) { /* kept for this page only */ }
+        return { privateKey: k.privateKey, raw: k.raw };
       });
     };
     sessionKeyFor()
@@ -664,6 +678,7 @@ mergeInto(LibraryManager.library, {
         entry: entry, round: net.where.roundId, nodes: nodes, contract: net.contract,
       }).then(function (world) {
         net.seedWord = world.seedWord | 0;
+        net.slot = world.slot;
         net.randomness = world.randomness;
         // THE CORE IS NOT RESTARTED HERE ANY MORE - it enters this world in
         // the same step that starts recording, in `net.opened`. Restarted
@@ -752,8 +767,8 @@ mergeInto(LibraryManager.library, {
             net.resuming = true;
             return net.client.resumeAfterReload({ roundId: net.where.roundId, entryId: net.where.entryId, blockTicks: contract.blockTicks | 0 })
               .then(function (r) {
-                b.st = b.core.init(net.seedWord, arenaWithItems((net.contract && typeof net.contract.blockTicks === 'number')
-                  ? { runTicks: net.contract.blockTicks } : {}));
+                b.st = b.core.init(net.seedWord, arenaWithItems(arenaWithSlot((net.contract && typeof net.contract.blockTicks === 'number')
+                  ? { runTicks: net.contract.blockTicks } : {})));
                 b.reliefEpoch = (b.reliefEpoch | 0) + 1;
                 net.seen = ARENACLIENT.catchUpCore(b.core, b.st, r.transcript);
                 // what Unity handed over before this is the lobby's market: the run's own tape, load and samples are in
@@ -788,8 +803,8 @@ mergeInto(LibraryManager.library, {
           // A LATE ENTRY'S RUN ENDS WITH THE ROUND'S: the round's run less the ticks before its join tick, and
           // its ticks are counted from that join tick - the HUD's time left is then the round's, and the last tick everybody's.
           var joinTick = (entry && typeof entry.joinTick === 'number' && entry.joinTick > 0) ? (entry.joinTick | 0) : 0;
-          b.st = b.core.init(net.seedWord, arenaWithItems((net.contract && typeof net.contract.blockTicks === 'number')
-            ? { runTicks: ARENACLIENT.runTicksForEntry(joinTick, net.contract.blockTicks) } : {}));
+          b.st = b.core.init(net.seedWord, arenaWithItems(arenaWithSlot((net.contract && typeof net.contract.blockTicks === 'number')
+            ? { runTicks: ARENACLIENT.runTicksForEntry(joinTick, net.contract.blockTicks) } : {})));
           // A NEW WORLD IS A NEW RELIEF: the seed names the hills. Counted here, where C# never
           // hears about it, so the drawn terrain knows to rebuild (ArenaCore.ReliefEpoch).
           b.reliefEpoch = (b.reliefEpoch | 0) + 1;
@@ -1115,7 +1130,7 @@ mergeInto(LibraryManager.library, {
   // helper only when a dependency asks for it; without these the call would be
   // eliminated from the build and fail in the page rather than here.
   ArenaNetNodeUrl__deps: ['$arenaDiscovery'],
-  ArenaNetStart__deps: ['$arenaDiscovery', '$arenaWithItems'],
+  ArenaNetStart__deps: ['$arenaDiscovery', '$arenaWithItems', '$arenaWithSlot'],
   $arenaDiscovery: function () {
     var d = (typeof ARENA_ADVERT !== 'undefined') ? ARENA_ADVERT : null;
     var c = (typeof ARENA_CHAIN !== 'undefined') ? ARENA_CHAIN : null;

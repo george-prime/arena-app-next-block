@@ -1,5 +1,5 @@
 {
- "about": "The client files Next Block's manifests pin, by version: the app's own list; the Arena's packages/arena-client/known-good-clients.json carries the same (games.nextblock), checked equal by the Arena's tests. pinned: versions 1-4's bundles and versions 1-5's mark. pinnedV5: the browser bundles versions 5 and 6 name, the cleaned cores a5c5766a and 0847c99f. markV6: the game's mark version 6 names - the square icon and the wordmark with their comments cleaned, the other files as before.",
+ "about": "The client files Next Block's manifests pin, by version: the app's own list; the Arena's packages/arena-client/known-good-clients.json carries the same (games.nextblock), checked equal by the Arena's tests. pinned: versions 1-4's bundles and versions 1-5's mark. pinnedV5: the browser bundles versions 5 and 6 name, the cleaned cores a5c5766a and 0847c99f. markV6: the game's mark version 6 names - the square icon and the wordmark with their comments cleaned, the other files as before. pinnedV7: the browser bundle version 7 names, core 8cbc74b2.",
  "pinned": {
   "blwp-core.js": [
    "f4f71ab9773701f8a321fe40d98163d8b704ae22780b879165c27a846297c203",
@@ -100,6 +100,11 @@
   ],
   "site.webmanifest": [
    "8643cd11e25859804f72bfb1498aaf9a4dd674b857edb557d50dbe0be2a77e8c"
+  ]
+ },
+ "pinnedV7": {
+  "core-8cbc74b2.js": [
+   "35889f637daf8f829118d751f65e626bfe58464d8a3903e6780e62833b8d9aec"
   ]
  }
 }
