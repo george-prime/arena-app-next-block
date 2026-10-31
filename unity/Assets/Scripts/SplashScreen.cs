@@ -131,10 +131,11 @@ public class SplashScreen : MonoBehaviour
             _continuingPolledAt = Time.unscaledTime;
             var page = Arena.DailyLobby.Poll();
             Continuing = page != null && page.continuing;
+            Exited = page != null && page.exited;
             NextBoxTop = page != null ? page.nextBoxTop : 0f;
             if (FollowsThePage(Continuing, _nextJoin) && page != null) _lobby = page;
         }
-        if (Showing) Continuing = false;
+        if (Showing) { Continuing = false; Exited = false; }
         // AND WHILE THE RESULT SUMMARY HOLDS (2026-10-04): on a wreck too, which draws no card - the page's hold to the
         // round's close + 20 s (DriveHud.ResultHolding), so the signed names stand on WASTED as on the card
         bool cardUp = _hud != null && (_hud.ArrivalShowing || _hud.ResultHolding);
@@ -200,6 +201,8 @@ public class SplashScreen : MonoBehaviour
 
     /// <summary>True while the page is taking the player to the next round (SPECTATE-2158); DriveHud keeps the card up.</summary>
     public static bool Continuing { get; private set; }
+    /// <summary>"Exit game" was pressed on the page (kanban #827): the result card goes now.</summary>
+    public static bool Exited { get; private set; }
     /// <summary>Where the page's next-round box starts, a fraction of the canvas from its top (0 while it is not up): the result card's floor.</summary>
     public static float NextBoxTop { get; private set; }
 
