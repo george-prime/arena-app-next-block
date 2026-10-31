@@ -471,7 +471,8 @@ const NB_NEXT = nbHost('arena-bal-split', 'after'), NB_WARN = nbHost('arena-lobb
     function cancelNextJoin(state) {
       const n = window.ARENA_NEXT; const j = window.ARENA_JOIN;
       if (n) n.state = state;
-      if (j && n && n.round && j.round === n.round && j.state === 'joining') {
+      // AND A ROUND ENTERED WITH PLAY THAT HAS NOT STARTED (kanban #882, Daniel 2026-10-31: "Exit game, wenn ich auf eine runde wartet geht NICHT in die Lobby zurück"): there is no ARENA_NEXT then, so exit did nothing
+      if (j && j.state === 'joining' && (!n || !n.round || j.round === n.round)) {
         // "refused" with no reason: Unity, which took this join as its own, stops waiting and shows the plain lobby
         j.cancelled = true; j.state = 'refused'; j.why = ''; j.stage = ''; j.held = false;
         window.ARENA_ROUND = undefined; window.ARENA_ENTRY = undefined;
