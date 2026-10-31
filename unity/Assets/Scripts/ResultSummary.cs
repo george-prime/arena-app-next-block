@@ -89,7 +89,7 @@ public static class ResultSummary
         }
         int driving = w.players.Count(p => string.IsNullOrEmpty(p.outcome));
         if (driving > 0) parts.Add(driving + " still driving");
-        return parts.Count > 0 ? string.Join("  ·  ", parts) : "no result signed yet";
+        return parts.Count > 0 ? string.Join("  ·  ", parts) : "the result comes when the round ends";
     }
 
     public static string HighScoreLine(Wire w)
@@ -104,7 +104,7 @@ public static class ResultSummary
     public static string YouLine(Wire w)
     {
         var me = w.players.FirstOrDefault(p => !string.IsNullOrEmpty(w.mine) && p.entry == w.mine);
-        if (me == null) return "YOU  not in the result yet";
+        if (me == null) return "YOU  counted when the round ends";
         // THE SIGNED OUTCOME AS SOON AS IT IS SIGNED, then the seats' own result once the settlement is accepted: the page
         // never turns an outcome into a win or a loss (a DELIVERED run still has to reach the round's minimum and rank)
         if (string.IsNullOrEmpty(me.outcome)) return "YOU  PENDING";
